@@ -101,7 +101,7 @@ namespace Dragablz
         /// with this helper method and embedding the TabablzControl in a UserControl, you can keep
         /// the View-specific dependencies out of the ViewModel.
         /// </remarks>
-        /// <param name="tabContentItem">An existing Tab item content (a ViewModel in MVVM scenarios) which is backing a tab control</param>
+        /// <param name="tabContentItem">An existing Tab item ViewModel (a ViewModel in MVVM scenarios) which is backing a tab control</param>
         public static void CloseItem(object tabContentItem)
         {
             if (tabContentItem == null) return; //Do nothing.
@@ -109,9 +109,11 @@ namespace Dragablz
             //Find all loaded TabablzControl instances with tabs backed by this item and close them
             foreach(var tabWithItemContent in 
                 GetLoadedInstances().SelectMany(tc => 
-                tc._dragablzItemsControl.DragablzItems().Where(di => di.Content.Equals(tabContentItem)).Select(di => new { tc, di })))
+                tc._dragablzItemsControl.DragablzItems()
+                    .Where(di => di.DataContext.Equals(tabContentItem))
+                    .Select(di => new { tc, di })))
             {
-                TabablzControl.CloseItem(tabWithItemContent.di, tabWithItemContent.tc);
+                CloseItem(tabWithItemContent.di, tabWithItemContent.tc);
             }
         }
 
