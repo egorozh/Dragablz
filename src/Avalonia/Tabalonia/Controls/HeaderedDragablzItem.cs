@@ -1,0 +1,47 @@
+using Avalonia.Markup.Xaml.Templates;
+
+namespace Tabalonia;
+
+public class HeaderedDragablzItem : DragablzItem
+{
+    static HeaderedDragablzItem()
+    {
+        DefaultStyleKeyProperty.OverrideMetadata(typeof(HeaderedDragablzItem), new FrameworkPropertyMetadata(typeof(HeaderedDragablzItem)));            
+    }
+        
+    public static readonly DependencyProperty HeaderContentProperty = DependencyProperty.Register(
+        "HeaderContent", typeof (object), typeof (HeaderedDragablzItem), new PropertyMetadata(default(object)));
+
+    public object HeaderContent
+    {
+        get => (object) GetValue(HeaderContentProperty);
+        set => SetValue(HeaderContentProperty, value);
+    }
+
+    public static readonly DependencyProperty HeaderContentStringFormatProperty = DependencyProperty.Register(
+        "HeaderContentStringFormat", typeof (string), typeof (HeaderedDragablzItem), new PropertyMetadata(default(string)));
+
+    public string HeaderContentStringFormat
+    {
+        get => (string) GetValue(HeaderContentStringFormatProperty);
+        set => SetValue(HeaderContentStringFormatProperty, value);
+    }
+
+    public static readonly DependencyProperty HeaderContentTemplateProperty = DependencyProperty.Register(
+        "HeaderContentTemplate", typeof (DataTemplate), typeof (HeaderedDragablzItem), new PropertyMetadata(default(DataTemplate)));
+
+    public DataTemplate HeaderContentTemplate
+    {
+        get => (DataTemplate) GetValue(HeaderContentTemplateProperty);
+        set => SetValue(HeaderContentTemplateProperty, value);
+    }
+
+    public static readonly DependencyProperty HeaderContentTemplateSelectorProperty = DependencyProperty.Register(
+        "HeaderContentTemplateSelector", typeof (DataTemplateSelector), typeof (HeaderedDragablzItem), new PropertyMetadata(default(DataTemplateSelector)));
+
+    public DataTemplateSelector HeaderContentTemplateSelector
+    {
+        get => (DataTemplateSelector) GetValue(HeaderContentTemplateSelectorProperty);
+        set => SetValue(HeaderContentTemplateSelectorProperty, value);
+    }         
+}
