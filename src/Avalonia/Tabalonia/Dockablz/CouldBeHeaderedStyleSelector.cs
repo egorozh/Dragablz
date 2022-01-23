@@ -1,3 +1,6 @@
+using Avalonia.Controls.Primitives;
+using Avalonia.Styling;
+
 namespace Tabalonia.Dockablz;
 
 public class CouldBeHeaderedStyleSelector : StyleSelector
@@ -8,7 +11,7 @@ public class CouldBeHeaderedStyleSelector : StyleSelector
 
     public override Style SelectStyle(object item, DependencyObject container)
     {
-        return container is HeaderedDragablzItem || container is HeaderedContentControl
+        return container is HeaderedDragablzItem or HeaderedContentControl
             ? HeaderedStyle
             : NonHeaderedStyle;
     }

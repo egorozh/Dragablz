@@ -1,4 +1,5 @@
 using System;
+using Avalonia;
 
 namespace Tabalonia;
 
@@ -9,7 +10,7 @@ namespace Tabalonia;
 /// </summary>
 public class DefaultInterLayoutClient : IInterLayoutClient
 {
-    public INewTabHost<UIElement> GetNewHost(object partition, TabablzControl source)
+    public INewTabHost<IAvaloniaObject> GetNewHost(object partition, TabablzControl source)
     {
         var tabablzControl = new TabablzControl {DataContext = source.DataContext};
 
@@ -25,10 +26,10 @@ public class DefaultInterLayoutClient : IInterLayoutClient
         Clone(source.InterTabController, newInterTabController);
         tabablzControl.SetCurrentValue(TabablzControl.InterTabControllerProperty, newInterTabController);            
 
-        return new NewTabHost<UIElement>(tabablzControl, tabablzControl);
+        return new NewTabHost<IAvaloniaObject>(tabablzControl, tabablzControl);
     }
 
-    private static void Clone(DependencyObject from, DependencyObject to)
+    private static void Clone(IAvaloniaObject from, IAvaloniaObject to)
     {
         var localValueEnumerator = from.GetLocalValueEnumerator();
         while (localValueEnumerator.MoveNext())

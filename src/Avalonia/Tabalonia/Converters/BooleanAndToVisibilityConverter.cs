@@ -1,34 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Avalonia.Data.Converters;
 
 namespace Tabalonia;
 
-public class BooleanAndToVisibilityConverter : IMultiValueConverter
+public class BooleanAndToVisibilityConverter : BaseMultiValueConverter
 {
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    public override object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
         if (values == null)
-            return Visibility.Collapsed;
-            
-        return values.Select(GetBool).All(b => b) 
-            ? Visibility.Visible
-            : Visibility.Collapsed;
-    }
+            return false;
 
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    {
-        return null;
+        return values.Select(GetBool).All(b => b);
     }
 
     private static bool GetBool(object value)
     {
         if (value is bool)
         {
-            return (bool)value;
+            return (bool) value;
         }
-            
+
         return false;
     }
 }

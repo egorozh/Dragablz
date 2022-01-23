@@ -1,4 +1,7 @@
 ﻿using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Layout;
 
 namespace Tabalonia.Dockablz;
 
@@ -12,7 +15,7 @@ internal class LocationSnapShot
     private readonly double _width;
     private readonly double _height;
 
-    public static LocationSnapShot Take(FrameworkElement frameworkElement)
+    public static LocationSnapShot Take(ILayoutable frameworkElement)
     {
         if (frameworkElement == null) throw new ArgumentNullException(nameof(frameworkElement));
             
@@ -25,11 +28,11 @@ internal class LocationSnapShot
         _height = height;
     }
 
-    public void Apply(FrameworkElement frameworkElement)
+    public void Apply(Control frameworkElement)
     {
         if (frameworkElement == null) throw new ArgumentNullException(nameof(frameworkElement));
             
-        frameworkElement.SetCurrentValue(FrameworkElement.WidthProperty, _width);
-        frameworkElement.SetCurrentValue(FrameworkElement.HeightProperty, _height);
+        //frameworkElement.SetCurrentValue(FrameworkElement.WidthProperty, _width);
+        //frameworkElement.SetCurrentValue(FrameworkElement.HeightProperty, _height);
     }
 }

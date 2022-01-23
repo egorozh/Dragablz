@@ -24,8 +24,8 @@ namespace Tabalonia;
 /// Extended tab control which supports tab repositioning, and drag and drop.  Also 
 /// uses the common WPF technique for pesisting the visual tree across tabs.
 /// </summary>
-[TemplatePart(Name = HeaderItemsControlPartName, Type = typeof(DragablzItemsControl))]
-[TemplatePart(Name = ItemsHolderPartName, Type = typeof(Panel))]
+//[TemplatePart(Name = HeaderItemsControlPartName, Type = typeof(DragablzItemsControl))]
+//[TemplatePart(Name = ItemsHolderPartName, Type = typeof(Panel))]
 public class TabablzControl : TabControl
 {
     /// <summary>
@@ -37,6 +37,7 @@ public class TabablzControl : TabControl
     /// </summary>
     public const string ItemsHolderPartName = "PART_ItemsHolder";
 
+    /*
     /// <summary>
     /// Routed command which can be used to close a tab.
     /// </summary>
@@ -1536,4 +1537,5 @@ public class TabablzControl : TabControl
 
         SetIsWrappingTabItem(dependencyObject, o is TabItem);            
     }
+    */
 }

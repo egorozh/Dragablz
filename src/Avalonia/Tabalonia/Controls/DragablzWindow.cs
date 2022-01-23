@@ -15,9 +15,9 @@ namespace Tabalonia;
 /// What this Window does is allow a quick way to remove the Window border, and support transparency whilst
 /// dragging.  
 /// </summary>
-[TemplatePart(Name = WindowSurfaceGridPartName, Type = typeof(Grid))]
-[TemplatePart(Name = WindowRestoreThumbPartName, Type = typeof(Thumb))]
-[TemplatePart(Name = WindowResizeThumbPartName, Type = typeof(Thumb))]
+//[TemplatePart(Name = WindowSurfaceGridPartName, Type = typeof(Grid))]
+//[TemplatePart(Name = WindowRestoreThumbPartName, Type = typeof(Thumb))]
+//[TemplatePart(Name = WindowResizeThumbPartName, Type = typeof(Thumb))]
 public class DragablzWindow : Window
 {
     public const string WindowSurfaceGridPartName = "PART_WindowSurface";
@@ -25,6 +25,7 @@ public class DragablzWindow : Window
     public const string WindowResizeThumbPartName = "PART_WindowResizeThumb";
     private readonly SerialDisposable _templateSubscription = new SerialDisposable();
 
+    /*
     public static RoutedCommand CloseWindowCommand = new RoutedCommand();
     public static RoutedCommand RestoreWindowCommand = new RoutedCommand();
     public static RoutedCommand MaximizeWindowCommand = new RoutedCommand();
@@ -361,5 +362,6 @@ public class DragablzWindow : Window
     private void CloseWindowExecuted(object sender, ExecutedRoutedEventArgs executedRoutedEventArgs)
     {
         Native.PostMessage(new WindowInteropHelper(this).Handle, WindowMessage.WM_CLOSE, IntPtr.Zero, IntPtr.Zero);
-    }             
+    }     
+    */
 }

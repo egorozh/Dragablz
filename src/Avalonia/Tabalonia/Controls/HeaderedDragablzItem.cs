@@ -4,6 +4,7 @@ namespace Tabalonia;
 
 public class HeaderedDragablzItem : DragablzItem
 {
+    /*
     static HeaderedDragablzItem()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(HeaderedDragablzItem), new FrameworkPropertyMetadata(typeof(HeaderedDragablzItem)));            
@@ -44,4 +45,5 @@ public class HeaderedDragablzItem : DragablzItem
         get => (DataTemplateSelector) GetValue(HeaderContentTemplateSelectorProperty);
         set => SetValue(HeaderContentTemplateSelectorProperty, value);
     }         
+    */
 }

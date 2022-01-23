@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
+using Avalonia;
+using Avalonia.Data.Converters;
 
 namespace Tabalonia;
 
-public class ShowDefaultCloseButtonConverter : IMultiValueConverter
+public class ShowDefaultCloseButtonConverter : BaseMultiValueConverter
 {
     /// <summary>
     /// [0] is owning tabcontrol ShowDefaultCloseButton value.
@@ -15,15 +18,22 @@ public class ShowDefaultCloseButtonConverter : IMultiValueConverter
     /// <param name="parameter"></param>
     /// <param name="culture"></param>
     /// <returns></returns>
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
-    {
-        return ((values[0] == DependencyProperty.UnsetValue ? false : (bool)values[0]) && 
-                (values[2] == DependencyProperty.UnsetValue ? 0 : (int)values[2]) >= 
-                (values[1] == DependencyProperty.UnsetValue ? 0 : (int)values[1])) ? Visibility.Visible : Visibility.Collapsed;
-    }
+    //public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    //{
+    //    return ((values[0] == DependencyProperty.UnsetValue ? false : (bool)values[0]) && 
+    //            (values[2] == DependencyProperty.UnsetValue ? 0 : (int)values[2]) >= 
+    //            (values[1] == DependencyProperty.UnsetValue ? 0 : (int)values[1])) ? Visibility.Visible : Visibility.Collapsed;
+    //}
 
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    //public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    //{
+    //    return null;            
+    //}
+
+    public override object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
-        return null;            
+        return ((values[0] == AvaloniaProperty.UnsetValue ? false : (bool)values[0]) &&
+                (values[2] == AvaloniaProperty.UnsetValue ? 0 : (int)values[2]) >= 
+                (values[1] == AvaloniaProperty.UnsetValue ? 0 : (int)values[1]));
     }
 }

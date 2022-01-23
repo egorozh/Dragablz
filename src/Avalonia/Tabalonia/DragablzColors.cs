@@ -1,4 +1,8 @@
 using System;
+using System.Drawing;
+using Avalonia.Media;
+using Tabalonia.Core;
+using Color = Avalonia.Media.Color;
 
 namespace Tabalonia;
 
@@ -39,15 +43,16 @@ public static class DragablzColors
 
     private static Brush GetWindowInactiveBrush()
     {
-        return new SolidColorBrush(SystemColors.MenuBarColor);
+        var c = SystemColors.MenuBar;
+        return new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B));
     }
 
     private static Color ToColor(UInt32 value)
     {
         return Color.FromArgb(255,
-            (byte)(value >> 16),
-            (byte)(value >> 8),
-            (byte)value
+            (byte) (value >> 16),
+            (byte) (value >> 8),
+            (byte) value
         );
     }
 
@@ -64,7 +69,6 @@ public static class DragablzColors
     private static byte BlendColorChannel(double channel1, double channel2, double channel2Percentage)
     {
         var buff = channel1 + (channel2 - channel1) * channel2Percentage / 100D;
-        return Math.Min((byte)Math.Round(buff), (byte)255);
-    }   
-        
+        return Math.Min((byte) Math.Round(buff), (byte) 255);
+    }
 }

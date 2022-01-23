@@ -1,3 +1,5 @@
+using Avalonia;
+
 namespace Tabalonia;
 
 /// <summary>
@@ -11,6 +13,6 @@ public interface IInterLayoutClient
     /// <param name="partition">Provides the partition where the drag operation was initiated.</param>
     /// <param name="source">The source control where a dragging operation was initiated.</param>
     /// <returns></returns>
-    INewTabHost<UIElement> GetNewHost(object partition, TabablzControl source);
+    INewTabHost<IAvaloniaObject> GetNewHost(object partition, TabablzControl source);
         
 }

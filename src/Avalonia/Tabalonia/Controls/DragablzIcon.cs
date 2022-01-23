@@ -1,11 +1,17 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
+using Avalonia.Styling;
 
 namespace Tabalonia;
 
-public class DragablzIcon : Control
+public class DragablzIcon : TemplatedControl, IStyleable
 {
-    static DragablzIcon()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(DragablzIcon), new FrameworkPropertyMetadata(typeof(DragablzIcon)));
-    }
+
+    #region IStyleable
+
+    Type IStyleable.StyleKey => typeof(DragablzIcon);
+
+    #endregion
+
 }

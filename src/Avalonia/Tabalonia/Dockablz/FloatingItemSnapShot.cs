@@ -1,4 +1,6 @@
 ﻿using System;
+using Avalonia;
+using Avalonia.Controls;
 
 namespace Tabalonia.Dockablz;
 

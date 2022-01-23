@@ -1,4 +1,8 @@
 using System;
+using System.Linq;
+using Avalonia.Controls;
+using Avalonia.Threading;
+using Tabalonia.Core;
 
 namespace Tabalonia;
 

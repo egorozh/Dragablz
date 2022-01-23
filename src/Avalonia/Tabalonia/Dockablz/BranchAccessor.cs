@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Linq;
+using Avalonia;
+using Dragablz.Dockablz;
+using Tabalonia.Core;
 
 namespace Tabalonia.Dockablz;
 
@@ -8,20 +12,18 @@ public class BranchAccessor
     {
         Branch = branch ?? throw new ArgumentNullException(nameof(branch));
 
-        var firstChildBranch = branch.FirstItem as Branch;
-        if (firstChildBranch != null)
+        if (branch.FirstItem is Branch firstChildBranch)
             FirstItemBranchAccessor = new BranchAccessor(firstChildBranch);
         else
             FirstItemTabablzControl = FindTabablzControl(branch.FirstItem, branch.FirstContentPresenter);
 
-        var secondChildBranch = branch.SecondItem as Branch;            
-        if (secondChildBranch != null)
+        if (branch.SecondItem is Branch secondChildBranch)
             SecondItemBranchAccessor = new BranchAccessor(secondChildBranch);
         else
             SecondItemTabablzControl = FindTabablzControl(branch.SecondItem, branch.SecondContentPresenter);
     }
 
-    private static TabablzControl FindTabablzControl(object item, DependencyObject contentPresenter)
+    private static TabablzControl? FindTabablzControl(object item, IAvaloniaObject contentPresenter)
     {
         var result = item as TabablzControl;
         return result ?? contentPresenter.VisualTreeDepthFirstTraversal().OfType<TabablzControl>().FirstOrDefault();

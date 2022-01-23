@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Avalonia.Layout;
+using Dragablz;
 
 namespace Tabalonia;
 

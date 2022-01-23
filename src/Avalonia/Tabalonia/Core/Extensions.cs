@@ -1,48 +1,50 @@
-#if NET40
-using System.Collections;
-using System.Reflection;
-#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 
 namespace Tabalonia.Core;
 
 internal static class Extensions
 {
-    public static IEnumerable<TContainer> Containers<TContainer>(this ItemsControl itemsControl) where TContainer : class
+    public static T Find<T>(this TemplateAppliedEventArgs e, string elementName) where T : class
     {
-#if NET40
-            var fieldInfo = typeof(ItemContainerGenerator).GetField("_items", BindingFlags.NonPublic | BindingFlags.Instance);
-            var list = (IList)fieldInfo.GetValue(itemsControl.ItemContainerGenerator);            
-            for (var i = 0; i < list.Count; i++)
-#else
+        var element = e.NameScope.Find<T>(elementName);
+
+        if (element == null)
+            throw new ElementNotFoundOnStyleException(elementName);
+
+        return element;
+    }
+
+    public static IEnumerable<TContainer> Containers<TContainer>(this ItemsControl itemsControl)
+        where TContainer : class
+    {
         for (var i = 0; i < itemsControl.ItemContainerGenerator.Items.Count; i++)
-#endif
         {
-            var container = itemsControl.ItemContainerGenerator.ContainerFromIndex(i) as TContainer;
-            if (container != null)
+            if (itemsControl.ItemContainerGenerator.ContainerFromIndex(i) is TContainer container)
                 yield return container;
         }
     }
 
     public static IEnumerable<TObject> Except<TObject>(this IEnumerable<TObject> first, params TObject[] second)
     {
-        return first.Except((IEnumerable<TObject>)second);
+        return first.Except((IEnumerable<TObject>) second);
     }
 
-    public static IEnumerable<object> LogicalTreeDepthFirstTraversal(this DependencyObject node)
+    public static IEnumerable<object> LogicalTreeDepthFirstTraversal(this IAvaloniaObject? node)
     {
         if (node == null) yield break;
         yield return node;
 
-        foreach (var child in LogicalTreeHelper.GetChildren(node).OfType<DependencyObject>()
+        foreach (var child in LogicalTreeHelper.GetChildren(node).OfType<IAvaloniaObject>()
                      .SelectMany(depObj => depObj.LogicalTreeDepthFirstTraversal()))
             yield return child;
     }
 
-    public static IEnumerable<object> VisualTreeDepthFirstTraversal(this DependencyObject node)
+    public static IEnumerable<object> VisualTreeDepthFirstTraversal(this IAvaloniaObject? node)
     {
         if (node == null) yield break;
         yield return node;
@@ -62,7 +64,7 @@ internal static class Extensions
     /// </summary>
     /// <param name="dependencyObject"></param>
     /// <returns></returns>
-    public static IEnumerable<DependencyObject> VisualTreeAncestory(this DependencyObject dependencyObject)
+    public static IEnumerable<IAvaloniaObject> VisualTreeAncestory(this IAvaloniaObject dependencyObject)
     {
         if (dependencyObject == null) throw new ArgumentNullException(nameof(dependencyObject));
 
@@ -78,7 +80,7 @@ internal static class Extensions
     /// </summary>
     /// <param name="dependencyObject"></param>
     /// <returns></returns>
-    public static IEnumerable<DependencyObject> LogicalTreeAncestory(this DependencyObject dependencyObject)
+    public static IEnumerable<IAvaloniaObject> LogicalTreeAncestory(this IAvaloniaObject dependencyObject)
     {
         if (dependencyObject == null) throw new ArgumentNullException(nameof(dependencyObject));
 
@@ -98,7 +100,8 @@ internal static class Extensions
     {
         if (window.WindowState == WindowState.Maximized)
         {
-            var leftField = typeof(Window).GetField("_actualLeft", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var leftField = typeof(Window).GetField("_actualLeft",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             return leftField?.GetValue(window) as double? ?? 0;
         }
 
@@ -114,11 +117,11 @@ internal static class Extensions
     {
         if (window.WindowState == WindowState.Maximized)
         {
-            var topField = typeof(Window).GetField("_actualTop", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            var topField = typeof(Window).GetField("_actualTop",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             return topField?.GetValue(window) as double? ?? 0;
         }
 
         return window.Top;
     }
-
 }

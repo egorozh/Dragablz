@@ -1,4 +1,6 @@
-﻿namespace Tabalonia.Dockablz;
+﻿using Avalonia.Interactivity;
+
+namespace Tabalonia.Dockablz;
 
 public delegate void FloatRequestedEventHandler(object sender, FloatRequestedEventArgs e);
 

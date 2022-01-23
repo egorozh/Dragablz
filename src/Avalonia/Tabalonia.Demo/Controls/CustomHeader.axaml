@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:tabalonia="clr-namespace:Tabalonia;assembly=Tabalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="Tabalonia.Demo.CustomHeader">
+
+    <UserControl.Styles>
+        <Style TargetType="{x:Type Thumb}" x:Key="InvisibleThumbStyle">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid Background="{TemplateBinding Background}" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Styles>
+    <StackPanel Orientation="Horizontal">
+        <Grid>
+            <TextBlock Text="{Binding Header}" />
+            <!-- you should provide your own Thumb, which will be used to monitor dragging -->
+            <Thumb Style="{DynamicResource InvisibleThumbStyle}"
+                   tabalonia:DragablzItem.IsCustomThumb="True" />
+        </Grid>
+        <CheckBox IsChecked="{Binding IsSelected}" ToolTip="Embed your own controls" />
+        <Button ToolTip="Manually add a close button"
+                Command="tabalonia:TabablzControl.CloseItemCommand"
+        >X</Button>
+    </StackPanel>
+</UserControl>

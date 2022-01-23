@@ -15,7 +15,8 @@ internal class FloatTransfer
     {
         if (dragablzItem == null) throw new ArgumentNullException(nameof(dragablzItem));
 
-        return new FloatTransfer(sourceTabControl.ActualWidth, sourceTabControl.ActualHeight, dragablzItem.UnderlyingContent ?? dragablzItem.Content ?? dragablzItem);
+        return new FloatTransfer(sourceTabControl.Bounds.Width, sourceTabControl.Bounds.Height,
+            dragablzItem.UnderlyingContent ?? dragablzItem.Content ?? dragablzItem);
     }
 
     [Obsolete]

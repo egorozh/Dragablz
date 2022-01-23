@@ -1,33 +1,48 @@
+using System;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Styling;
+using Dragablz.Dockablz;
+
 namespace Tabalonia.Dockablz;
 
-public class DropZone : Control
+public class DropZone : Control, IStyleable
 {
-    static DropZone()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(DropZone), new FrameworkPropertyMetadata(typeof(DropZone)));            
-    }
+    #region IStyleable
 
-    public static readonly DependencyProperty LocationProperty = DependencyProperty.Register(
-        "Location", typeof (DropZoneLocation), typeof (DropZone), new PropertyMetadata(default(DropZoneLocation)));
+    Type IStyleable.StyleKey => typeof(DropZone);
+
+    #endregion
+
+    #region Avalonia Properties
+    
+    public static readonly StyledProperty<DropZoneLocation> LocationProperty =
+        AvaloniaProperty.Register<Branch, DropZoneLocation>(nameof(Location));
+
+
+    public static readonly DirectProperty<DropZone, bool> IsOfferedProperty =
+        AvaloniaProperty.RegisterDirect<DropZone, bool>(nameof(IsOffered), 
+            o => o.IsOffered, (o, v) => o.IsOffered = v);
+    
+
+    private bool _isOffered;
+
+    #endregion
+
+    #region Public Properties
 
     public DropZoneLocation Location
     {
-        get => (DropZoneLocation) GetValue(LocationProperty);
+        get => GetValue(LocationProperty);
         set => SetValue(LocationProperty, value);
     }
 
-    private static readonly DependencyPropertyKey IsOfferedPropertyKey =
-        DependencyProperty.RegisterReadOnly(
-            "IsOffered", typeof (bool), typeof (DropZone),
-            new PropertyMetadata(default(bool)));
-
-    public static readonly DependencyProperty IsOfferedProperty =
-        IsOfferedPropertyKey.DependencyProperty;
 
     public bool IsOffered
     {
-        get => (bool) GetValue(IsOfferedProperty);
-        internal set => SetValue(IsOfferedPropertyKey, value);
+        get => GetValue(IsOfferedProperty);
+        internal set => SetAndRaise(IsOfferedProperty, ref _isOffered, value);
     }
 
+    #endregion
 }

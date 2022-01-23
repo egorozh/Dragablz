@@ -2,20 +2,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Controls.Presenters;
+using Avalonia.Data;
+using Avalonia.Layout;
+using Avalonia.Markup.Xaml.Templates;
+using Avalonia.Styling;
+using Avalonia.Threading;
+using Dragablz.Core;
+using Dragablz.Dockablz;
+using Tabalonia.Core;
 
 namespace Tabalonia.Dockablz;
 
 public delegate void ClosingFloatingItemCallback(ItemActionCallbackArgs<Layout> args);
 
-[TemplatePart(Name = TopDropZonePartName, Type = typeof(DropZone))]
-[TemplatePart(Name = RightDropZonePartName, Type = typeof(DropZone))]
-[TemplatePart(Name = BottomDropZonePartName, Type = typeof(DropZone))]
-[TemplatePart(Name = LeftDropZonePartName, Type = typeof(DropZone))]
-[TemplatePart(Name = FloatingDropZonePartName, Type = typeof(DropZone))]
-[TemplatePart(Name = FloatingContentPresenterPartName, Type = typeof(ContentPresenter))]
+//[TemplatePart(Name = TopDropZonePartName, Type = typeof(DropZone))]
+//[TemplatePart(Name = RightDropZonePartName, Type = typeof(DropZone))]
+//[TemplatePart(Name = BottomDropZonePartName, Type = typeof(DropZone))]
+//[TemplatePart(Name = LeftDropZonePartName, Type = typeof(DropZone))]
+//[TemplatePart(Name = FloatingDropZonePartName, Type = typeof(DropZone))]
+//[TemplatePart(Name = FloatingContentPresenterPartName, Type = typeof(ContentPresenter))]
 public class Layout : ContentControl
 {
-    private static readonly HashSet<Layout> LoadedLayouts = new HashSet<Layout>();
+    private static readonly HashSet<Layout> LoadedLayouts = new();
     private const string TopDropZonePartName = "PART_TopDropZone";
     private const string RightDropZonePartName = "PART_RightDropZone";
     private const string BottomDropZonePartName = "PART_BottomDropZone";
@@ -25,6 +36,8 @@ public class Layout : ContentControl
     
     private readonly IDictionary<DropZoneLocation, DropZone> _dropZones = new Dictionary<DropZoneLocation, DropZone>();
     private static Tuple<Layout, DropZone> _currentlyOfferedDropZone;
+
+    /*
 
     public static RoutedCommand UnfloatItemCommand = new RoutedCommand();
     public static RoutedCommand MaximiseFloatingItem = new RoutedCommand();
@@ -970,4 +983,6 @@ public class Layout : ContentControl
                 new Action(() => RestoreFloatingItemSnapShots(newTabHost.TabablzControl, floatingItemSnapShots)));
         }), DispatcherPriority.DataBind);            
     }
+
+    */
 }

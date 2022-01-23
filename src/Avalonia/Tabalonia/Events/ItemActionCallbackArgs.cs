@@ -1,11 +1,12 @@
 ﻿using System;
+using Avalonia;
 using Avalonia.Controls;
 
 namespace Tabalonia;
 
 public delegate void ItemActionCallback(ItemActionCallbackArgs<TabablzControl> args);
 
-public class ItemActionCallbackArgs<TOwner> where TOwner : FrameworkElement
+public class ItemActionCallbackArgs<TOwner> where TOwner : IAvaloniaObject
 {
     public ItemActionCallbackArgs(Window window, TOwner owner, DragablzItem dragablzItem)
     {

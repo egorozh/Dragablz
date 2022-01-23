@@ -1,32 +1,65 @@
-﻿using Avalonia.Controls;
+﻿using System;
+using Avalonia;
+using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
+using Avalonia.Controls.Primitives;
+using Avalonia.Data;
 using Avalonia.Layout;
+using Avalonia.Styling;
+using Tabalonia.Core;
 
 namespace Tabalonia.Dockablz;
 
-[TemplatePart(Name = FirstContentPresenterPartName, Type=typeof(ContentPresenter))]
-[TemplatePart(Name = SecondContentPresenterPartName, Type = typeof(ContentPresenter))]
-public class Branch : Control
+public class Branch : TemplatedControl, IStyleable
 {
+    #region Constants
+
     private const string FirstContentPresenterPartName = "PART_FirstContentPresenter";
     private const string SecondContentPresenterPartName = "PART_SecondContentPresenter";
 
-    static Branch()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(Branch), new FrameworkPropertyMetadata(typeof(Branch)));
-    }
+    #endregion
 
-    public static readonly DependencyProperty OrientationProperty = DependencyProperty.Register(
-        "Orientation", typeof (Orientation), typeof (Branch), new PropertyMetadata(default(Orientation)));
+    #region IStyleable
+
+    Type IStyleable.StyleKey => typeof(Branch);
+
+    #endregion
+
+    #region Avalonia Properties
+
+    public static readonly StyledProperty<Orientation> OrientationProperty =
+        AvaloniaProperty.Register<Branch, Orientation>(nameof(Orientation));
+
+    public static readonly StyledProperty<object> FirstItemProperty =
+        AvaloniaProperty.Register<Branch, object>(nameof(FirstItem));
+
+    public static readonly StyledProperty<GridLength> FirstItemLengthProperty =
+        AvaloniaProperty.Register<Branch, GridLength>(nameof(FirstItemLength), 
+            new GridLength(0.49999, GridUnitType.Star), defaultBindingMode: BindingMode.TwoWay);
+
+    public static readonly StyledProperty<object> SecondItemProperty =
+        AvaloniaProperty.Register<Branch, object>(nameof(SecondItem));
+
+    public static readonly StyledProperty<GridLength> SecondItemLengthProperty =
+        AvaloniaProperty.Register<Branch, GridLength>(nameof(SecondItemLength),
+            new GridLength(0.50001, GridUnitType.Star), defaultBindingMode: BindingMode.TwoWay);
+   
+    #endregion
+
+    #region Internal Properties
+
+    internal ContentPresenter FirstContentPresenter { get; private set; }
+    internal ContentPresenter SecondContentPresenter { get; private set; }
+
+    #endregion
+
+    #region Public Properties
 
     public Orientation Orientation
     {
-        get => (Orientation) GetValue(OrientationProperty);
+        get => GetValue(OrientationProperty);
         set => SetValue(OrientationProperty, value);
     }
-
-    public static readonly DependencyProperty FirstItemProperty = DependencyProperty.Register(
-        "FirstItem", typeof(object), typeof(Branch), new PropertyMetadata(default(object)));
 
     public object FirstItem
     {
@@ -34,17 +67,11 @@ public class Branch : Control
         set => SetValue(FirstItemProperty, value);
     }
 
-    public static readonly DependencyProperty FirstItemLengthProperty = DependencyProperty.Register(
-        "FirstItemLength", typeof (GridLength), typeof (Branch), new FrameworkPropertyMetadata(new GridLength(0.49999, GridUnitType.Star), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
     public GridLength FirstItemLength
     {
-        get => (GridLength) GetValue(FirstItemLengthProperty);
+        get => GetValue(FirstItemLengthProperty);
         set => SetValue(FirstItemLengthProperty, value);
     }
-
-    public static readonly DependencyProperty SecondItemProperty = DependencyProperty.Register(
-        "SecondItem", typeof(object), typeof(Branch), new PropertyMetadata(default(object)));
 
     public object SecondItem
     {
@@ -52,32 +79,26 @@ public class Branch : Control
         set => SetValue(SecondItemProperty, value);
     }
 
-    public static readonly DependencyProperty SecondItemLengthProperty = DependencyProperty.Register(
-        "SecondItemLength", typeof(GridLength), typeof(Branch), new FrameworkPropertyMetadata(new GridLength(0.50001, GridUnitType.Star), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
-
     public GridLength SecondItemLength
     {
-        get => (GridLength) GetValue(SecondItemLengthProperty);
+        get => GetValue(SecondItemLengthProperty);
         set => SetValue(SecondItemLengthProperty, value);
-    }        
+    }
+
+    #endregion
 
     /// <summary>
     /// Gets the proportional size of the first item, between 0 and 1, where 1 would represent the entire size of the branch.
     /// </summary>
     /// <returns></returns>
-    public double GetFirstProportion()
+    public double GetFirstProportion() =>
+        (1 / (FirstItemLength.Value + SecondItemLength.Value)) * FirstItemLength.Value;
+
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        return (1/(FirstItemLength.Value + SecondItemLength.Value))*FirstItemLength.Value;
+        base.OnApplyTemplate(e);
+
+        FirstContentPresenter = e.Find<ContentPresenter>(FirstContentPresenterPartName);
+        SecondContentPresenter = e.Find<ContentPresenter>(SecondContentPresenterPartName);
     }
-
-    public override void OnApplyTemplate()
-    {
-        base.OnApplyTemplate();
-
-        FirstContentPresenter = GetTemplateChild(FirstContentPresenterPartName) as ContentPresenter;
-        SecondContentPresenter = GetTemplateChild(SecondContentPresenterPartName) as ContentPresenter;
-    }
-
-    internal ContentPresenter FirstContentPresenter { get; private set; }
-    internal ContentPresenter SecondContentPresenter { get; private set; }
 }

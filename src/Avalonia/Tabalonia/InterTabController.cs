@@ -1,6 +1,8 @@
-﻿namespace Tabalonia;
+﻿using Avalonia;
 
-public class InterTabController : FrameworkElement
+namespace Tabalonia;
+
+public class InterTabController : AvaloniaObject
 {
     public InterTabController()
     {
@@ -9,58 +11,46 @@ public class InterTabController : FrameworkElement
         MoveWindowWithSolitaryTabs = true;            
     }
 
-    public static readonly DependencyProperty HorizontalPopoutGraceProperty = DependencyProperty.Register(
-        "HorizontalPopoutGrace", typeof (double), typeof (InterTabController), new PropertyMetadata(8.0));
+    #region Avalonia Properties
+
+    public static readonly StyledProperty<double> HorizontalPopoutGraceProperty =
+        AvaloniaProperty.Register<InterTabController, double>(nameof(HorizontalPopoutGrace), 8.0);
+
+    public static readonly StyledProperty<double> VerticalPopoutGraceProperty =
+        AvaloniaProperty.Register<InterTabController, double>(nameof(VerticalPopoutGrace), 8.0);
+    
+    public static readonly StyledProperty<bool> MoveWindowWithSolitaryTabsProperty =
+        AvaloniaProperty.Register<InterTabController, bool>(nameof(MoveWindowWithSolitaryTabs), true);
+
+    public static readonly StyledProperty<IInterTabClient> InterTabClientProperty =
+        AvaloniaProperty.Register<InterTabController, IInterTabClient>(nameof(InterTabClient), new DefaultInterTabClient());
+    
+    #endregion
+
+    #region Public Properties
 
     public double HorizontalPopoutGrace
     {
-        get => (double) GetValue(HorizontalPopoutGraceProperty);
+        get => GetValue(HorizontalPopoutGraceProperty);
         set => SetValue(HorizontalPopoutGraceProperty, value);
     }
-
-    public static readonly DependencyProperty VerticalPopoutGraceProperty = DependencyProperty.Register(
-        "VerticalPopoutGrace", typeof (double), typeof (InterTabController), new PropertyMetadata(8.0));
-
     public double VerticalPopoutGrace
     {
-        get => (double) GetValue(VerticalPopoutGraceProperty);
+        get => GetValue(VerticalPopoutGraceProperty);
         set => SetValue(VerticalPopoutGraceProperty, value);
     }
-
-    public static readonly DependencyProperty MoveWindowWithSolitaryTabsProperty = DependencyProperty.Register(
-        "MoveWindowWithSolitaryTabs", typeof (bool), typeof (InterTabController), new PropertyMetadata(true));
-
     public bool MoveWindowWithSolitaryTabs
     {
-        get => (bool) GetValue(MoveWindowWithSolitaryTabsProperty);
+        get => GetValue(MoveWindowWithSolitaryTabsProperty);
         set => SetValue(MoveWindowWithSolitaryTabsProperty, value);
     }
-
-    public static readonly DependencyProperty InterTabClientProperty = DependencyProperty.Register(
-        "InterTabClient", typeof (IInterTabClient), typeof (InterTabController),
-        new PropertyMetadata(new DefaultInterTabClient()));
-
     public IInterTabClient InterTabClient
     {
-        get => (IInterTabClient) GetValue(InterTabClientProperty);
+        get => GetValue(InterTabClientProperty);
         set => SetValue(InterTabClientProperty, value);
     }
-
-    /*
-    public static readonly DependencyProperty PartitionProperty = DependencyProperty.Register(
-        "Partition", typeof (object), typeof (InterTabController), new PropertyMetadata(default(object)));
-
-    /// <summary>
-    /// The partition allows on or more tab environments in a single application.  Only tabs which have a tab controller
-    /// with a common partition will be allowed to have tabs dragged between them.  <c>null</c> is a valid partition (i.e global).
-    /// </summary>
-    public object Partition
-    {
-        get { return (object) GetValue(PartitionProperty); }
-        set { SetValue(PartitionProperty, value); }
-    }
-     */
-
+    #endregion
+    
     /// <summary>
     /// The partition allows on or more tab environments in a single application.  Only tabs which have a tab controller
     /// with a common partition will be allowed to have tabs dragged between them.  <c>null</c> is a valid partition (i.e global).

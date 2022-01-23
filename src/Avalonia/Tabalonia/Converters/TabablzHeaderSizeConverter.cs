@@ -1,15 +1,18 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Avalonia.Data;
+using Avalonia.Data.Converters;
+using Avalonia.Layout;
 
 namespace Tabalonia;
 
 /// <summary>
 /// Provides a little help for sizing the header panel in the tab control
 /// </summary>
-public class TabablzHeaderSizeConverter : IMultiValueConverter
-{        
-    public Orientation Orientation { get; set; }
+public class TabablzHeaderSizeConverter : BaseMultiValueConverter
+{
 
     /// <summary>
     /// The first value should be the total size available size, typically the parent control size.  
@@ -21,11 +24,32 @@ public class TabablzHeaderSizeConverter : IMultiValueConverter
     /// <param name="parameter"></param>
     /// <param name="culture"></param>
     /// <returns></returns>
-    public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    //public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+    //{
+    //    if (values == null) throw new ArgumentNullException(nameof(values));
+
+    //    if (values.Length < 2) return Binding.DoNothing;
+
+    //    var val = values
+    //        .Skip(2)
+    //        .OfType<double>()
+    //        .Where(d => !double.IsInfinity(d) && !double.IsNaN(d))
+    //        .Aggregate(values.OfType<double>().First(), (current, diminish) => current - diminish);
+
+    //    var maxWidth = values.Take(2).OfType<double>().Min();
+
+    //    return Math.Min(Math.Max(val, 0), maxWidth);
+    //}
+
+    //public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+    //{
+    //    throw new NotImplementedException();
+    //}
+    public override object? Convert(IList<object?> values, Type targetType, object? parameter, CultureInfo culture)
     {
         if (values == null) throw new ArgumentNullException(nameof(values));
 
-        if (values.Length < 2) return Binding.DoNothing;
+        if (values.Count < 2) return null;
 
         var val = values
             .Skip(2)
@@ -36,10 +60,5 @@ public class TabablzHeaderSizeConverter : IMultiValueConverter
         var maxWidth = values.Take(2).OfType<double>().Min();
 
         return Math.Min(Math.Max(val, 0), maxWidth);
-    }
-
-    public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
-    {
-        throw new NotImplementedException();
     }
 }

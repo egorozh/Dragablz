@@ -4,7 +4,12 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
 using System;
+using System.Linq;
 using System.Reactive.Disposables;
+using Avalonia;
+using Avalonia.Styling;
+using Tabalonia.Core;
+using Tabalonia.Dockablz;
 
 namespace Tabalonia;
 
@@ -21,8 +26,7 @@ public enum SizeGrip
     BottomLeft
 }
 
-[TemplatePart(Name = ThumbPartName, Type = typeof(Thumb))]
-public class DragablzItem : ContentControl
+public class DragablzItem : ContentControl, IStyleable
 {
     public const string ThumbPartName = "PART_Thumb";
 
@@ -33,26 +37,204 @@ public class DragablzItem : ContentControl
     private Thumb _thumb;
     private bool _seizeDragWithTemplate;
     private Action<DragablzItem> _dragSeizedContinuation;
+    private bool _isTemplateThumbWithMouseAfterSeize = false;
+
+    #region IStyleable
+
+    Type IStyleable.StyleKey => typeof(DragablzItem);
+
+    #endregion
 
     static DragablzItem()
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(DragablzItem), new FrameworkPropertyMetadata(typeof(DragablzItem)));            
+        SizeGripProperty.Changed.Subscribe(x => SizeGripPropertyChangedCallback(x.Sender));
+        IsCustomThumbProperty.Changed.Subscribe(x => IsCustomThumbPropertyChangedCallback(x.Sender));
     }
 
     public DragablzItem()
     {
-        AddHandler(MouseDownEvent, new RoutedEventHandler(MouseDownHandler), true);            
+        //AddHandler(MouseDownEvent, new RoutedEventHandler(MouseDownHandler), true);
+    }
+    
+    #region Avalonia Properties
+
+    public static readonly StyledProperty<double> XProperty =
+        AvaloniaProperty.Register<DragablzItem, double>(nameof(X));
+
+    public static readonly StyledProperty<double> YProperty =
+        AvaloniaProperty.Register<DragablzItem, double>(nameof(Y));
+
+    #endregion
+
+    #region Attached Properties
+    
+    public static readonly AttachedProperty<SizeGrip> SizeGripProperty =
+        AvaloniaProperty.RegisterAttached<DragablzItem, Control, SizeGrip>("SizeGrip");
+
+    public static SizeGrip GetSizeGrip(Control element) 
+        => element.GetValue(SizeGripProperty);
+
+    public static void SetSizeGrip(Control element, SizeGrip value) 
+        => element.SetValue(SizeGripProperty, value);
+
+    private static void SizeGripPropertyChangedCallback(IAvaloniaObject dependencyObject)
+    {
+        if (dependencyObject is not Thumb thumb) 
+            return;
+
+        thumb.DragDelta += SizeThumbOnDragDelta;
     }
 
-    public static readonly DependencyProperty XProperty = DependencyProperty.Register(
-        "X", typeof (double), typeof (DragablzItem), new PropertyMetadata(default(double), OnXChanged));
+    private static void SizeThumbOnDragDelta(object sender, VectorEventArgs dragDeltaEventArgs)
+    {
+        var thumb = ((Thumb)sender);
+        var dragablzItem = thumb.VisualTreeAncestory().OfType<DragablzItem>().FirstOrDefault();
+        if (dragablzItem == null) return;
+
+        var sizeGrip = thumb.GetValue(SizeGripProperty);
+        var width = dragablzItem.Bounds.Width;
+        var height = dragablzItem.Bounds.Height;
+        var x = dragablzItem.X;
+        var y = dragablzItem.Y;
+        switch (sizeGrip)
+        {
+            case SizeGrip.NotApplicable:
+                break;
+            case SizeGrip.Left:
+                width += -dragDeltaEventArgs.Vector.X;
+                x += dragDeltaEventArgs.Vector.X;
+                break;
+            case SizeGrip.TopLeft:
+                width += -dragDeltaEventArgs.Vector.X;
+                height += -dragDeltaEventArgs.Vector.Y;
+                x += dragDeltaEventArgs.Vector.X;
+                y += dragDeltaEventArgs.Vector.Y;
+                break;
+            case SizeGrip.Top:
+                height += -dragDeltaEventArgs.Vector.Y;
+                y += dragDeltaEventArgs.Vector.Y;
+                break;
+            case SizeGrip.TopRight:
+                height += -dragDeltaEventArgs.Vector.Y;
+                width += dragDeltaEventArgs.Vector.X;
+                y += dragDeltaEventArgs.Vector.Y;
+                break;
+            case SizeGrip.Right:
+                width += dragDeltaEventArgs.Vector.X;
+                break;
+            case SizeGrip.BottomRight:
+                width += dragDeltaEventArgs.Vector.X;
+                height += dragDeltaEventArgs.Vector.Y;
+                break;
+            case SizeGrip.Bottom:
+                height += dragDeltaEventArgs.Vector.Y;
+                break;
+            case SizeGrip.BottomLeft:
+                height += dragDeltaEventArgs.Vector.Y;
+                width += -dragDeltaEventArgs.Vector.X;
+                x += dragDeltaEventArgs.Vector.X;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+        dragablzItem.SetValue(XProperty, x);
+        dragablzItem.SetValue(YProperty, y);
+        dragablzItem.SetValue(WidthProperty, Math.Max(width, thumb.DesiredSize.Width));
+        dragablzItem.SetValue(HeightProperty, Math.Max(height, thumb.DesiredSize.Height));
+    }
+
+    /// <summary>
+    /// <see cref="DragablzItem" /> templates contain a thumb, which is used to drag the item around.
+    /// For most scenarios this is fine, but by setting this flag to <value>true</value> you can define
+    /// a custom thumb in your content, without having to override the template.  This can be useful if you
+    /// have extra content; such as a custom button that you want the user to be able to interact with (as usually
+    /// the default thumb will handle mouse interaction).
+    /// </summary>
+    public static readonly AttachedProperty<bool> IsCustomThumbProperty =
+            AvaloniaProperty.RegisterAttached<DragablzItem, Thumb, bool>("IsCustomThumb");
+     
+    private static void IsCustomThumbPropertyChangedCallback(IAvaloniaObject dependencyObject)
+    {
+        if (dependencyObject is not Thumb thumb) 
+            throw new ApplicationException("IsCustomThumb can only be applied to a thumb");
+
+        if (thumb.IsArrangeValid)
+            ApplyCustomThumbSetting(thumb);
+        //else
+        //    thumb.Loaded += CustomThumbOnLoaded;
+    }
+
+    /// <summary>
+    /// <see cref="DragablzItem" /> templates contain a thumb, which is used to drag the item around.
+    /// For most scenarios this is fine, but by setting this flag to <value>true</value> you can define
+    /// a custom thumb in your content, without having to override the template.  This can be useful if you
+    /// have extra content; such as a custom button that you want the user to be able to interact with (as usually
+    /// the default thumb will handle mouse interaction).
+    /// </summary>
+    public static void SetIsCustomThumb(Thumb element, bool value) 
+        => element.SetValue(IsCustomThumbProperty, value);
+
+    public static bool GetIsCustomThumb(Thumb element) 
+        => element.GetValue(IsCustomThumbProperty);
+
+    #endregion
+
+    #region Internal Properties
+
+    internal Point MouseAtDragStart { get; set; }
+
+    internal string PartitionAtDragStart { get; set; }
+
+    internal bool IsDropTargetFound { get; set; }
+
+    #endregion
+    
+    #region Public Properties
 
     public double X
     {
-        get => (double) GetValue(XProperty);
+        get => GetValue(XProperty);
         set => SetValue(XProperty, value);
     }
 
+    public double Y
+    {
+        get => GetValue(YProperty);
+        set => SetValue(YProperty, value);
+    }
+
+    #endregion
+
+    protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == XProperty)
+        {
+            //var args = new RoutedPropertyChangedEventArgs<double>(
+            //    (double)e.OldValue,
+            //    (double)e.NewValue)
+            //{
+            //    RoutedEvent = XChangedEvent
+            //};
+
+            //RaiseEvent(args);
+        }
+        else if (change.Property == YProperty)
+        {
+            //var args = new RoutedPropertyChangedEventArgs<double>(
+            //    (double)e.OldValue,
+            //    (double)e.NewValue)
+            //{
+            //    RoutedEvent = YChangedEvent
+            //};
+            //RaiseEvent(args);
+        }
+    }
+
+    /*   
+   
     public static readonly RoutedEvent XChangedEvent =
         EventManager.RegisterRoutedEvent(
             "XChanged",
@@ -64,28 +246,6 @@ public class DragablzItem : ContentControl
     {
         add => AddHandler(XChangedEvent, value);
         remove => RemoveHandler(IsDraggingChangedEvent, value);
-    }
-
-    private static void OnXChanged(
-        DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {   
-        var instance = (DragablzItem)d;
-        var args = new RoutedPropertyChangedEventArgs<double>(
-            (double)e.OldValue,
-            (double)e.NewValue)
-        {
-            RoutedEvent = XChangedEvent
-        };
-        instance.RaiseEvent(args);            
-    } 
-
-    public static readonly DependencyProperty YProperty = DependencyProperty.Register(
-        "Y", typeof (double), typeof (DragablzItem), new PropertyMetadata(default(double), OnYChanged));
-
-    public double Y
-    {
-        get => (double) GetValue(YProperty);
-        set => SetValue(YProperty, value);
     }
 
     public static readonly RoutedEvent YChangedEvent =
@@ -100,20 +260,7 @@ public class DragablzItem : ContentControl
         add => AddHandler(YChangedEvent, value);
         remove => RemoveHandler(IsDraggingChangedEvent, value);
     }
-
-    private static void OnYChanged(
-        DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var instance = (DragablzItem)d;
-        var args = new RoutedPropertyChangedEventArgs<double>(
-            (double)e.OldValue,
-            (double)e.NewValue)
-        {
-            RoutedEvent = YChangedEvent
-        };
-        instance.RaiseEvent(args);
-    }
-
+    
     private static readonly DependencyPropertyKey LogicalIndexPropertyKey =
         DependencyProperty.RegisterReadOnly(
             "LogicalIndex", typeof (int), typeof (DragablzItem),
@@ -154,83 +301,8 @@ public class DragablzItem : ContentControl
         instance.RaiseEvent(args);
     } 
 
-    public static readonly DependencyProperty SizeGripProperty = DependencyProperty.RegisterAttached(
-        "SizeGrip", typeof (SizeGrip), typeof (DragablzItem), new PropertyMetadata(default(SizeGrip), SizeGripPropertyChangedCallback));
-
-    private static void SizeGripPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-    {
-        var thumb = (dependencyObject as Thumb);
-        if (thumb == null) return;
-        thumb.DragDelta += SizeThumbOnDragDelta;
-    }
-
-    private static void SizeThumbOnDragDelta(object sender, DragDeltaEventArgs dragDeltaEventArgs)
-    {
-        var thumb = ((Thumb) sender);
-        var dragablzItem = thumb.VisualTreeAncestory().OfType<DragablzItem>().FirstOrDefault();
-        if (dragablzItem == null) return;
-
-        var sizeGrip = (SizeGrip) thumb.GetValue(SizeGripProperty);
-        var width = dragablzItem.ActualWidth;
-        var height = dragablzItem.ActualHeight;
-        var x = dragablzItem.X;
-        var y = dragablzItem.Y;
-        switch (sizeGrip)
-        {                                   
-            case SizeGrip.NotApplicable:
-                break;
-            case SizeGrip.Left:
-                width += -dragDeltaEventArgs.HorizontalChange;
-                x += dragDeltaEventArgs.HorizontalChange;
-                break;
-            case SizeGrip.TopLeft:
-                width += -dragDeltaEventArgs.HorizontalChange;
-                height += -dragDeltaEventArgs.VerticalChange;
-                x += dragDeltaEventArgs.HorizontalChange;
-                y += dragDeltaEventArgs.VerticalChange;
-                break;
-            case SizeGrip.Top:
-                height += -dragDeltaEventArgs.VerticalChange;                    
-                y += dragDeltaEventArgs.VerticalChange;
-                break;
-            case SizeGrip.TopRight:
-                height += -dragDeltaEventArgs.VerticalChange;
-                width += dragDeltaEventArgs.HorizontalChange;
-                y += dragDeltaEventArgs.VerticalChange;
-                break;
-            case SizeGrip.Right:
-                width += dragDeltaEventArgs.HorizontalChange;
-                break;
-            case SizeGrip.BottomRight:
-                width += dragDeltaEventArgs.HorizontalChange;
-                height += dragDeltaEventArgs.VerticalChange;
-                break;
-            case SizeGrip.Bottom:
-                height += dragDeltaEventArgs.VerticalChange;
-                break;
-            case SizeGrip.BottomLeft:
-                height += dragDeltaEventArgs.VerticalChange;
-                width += -dragDeltaEventArgs.HorizontalChange;
-                x += dragDeltaEventArgs.HorizontalChange;
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-        dragablzItem.SetCurrentValue(XProperty, x);
-        dragablzItem.SetCurrentValue(YProperty, y);
-        dragablzItem.SetCurrentValue(WidthProperty, Math.Max(width, thumb.DesiredSize.Width));
-        dragablzItem.SetCurrentValue(HeightProperty, Math.Max(height, thumb.DesiredSize.Height));
-    }
-
-    public static void SetSizeGrip(DependencyObject element, SizeGrip value)
-    {
-        element.SetValue(SizeGripProperty, value);
-    }
-
-    public static SizeGrip GetSizeGrip(DependencyObject element)
-    {
-        return (SizeGrip) element.GetValue(SizeGripProperty);
-    }
+    
+    
 
     /// <summary>
     /// Allows item content to be rotated (in suppported templates), typically for use in a vertical/side tab.
@@ -414,66 +486,10 @@ public class DragablzItem : ContentControl
         _templateSubscriptions.Disposable = SelectAndSubscribeToThumb().Item2;
     }
 
-    /// <summary>
-    /// <see cref="DragablzItem" /> templates contain a thumb, which is used to drag the item around.
-    /// For most scenarios this is fine, but by setting this flag to <value>true</value> you can define
-    /// a custom thumb in your content, without having to override the template.  This can be useful if you
-    /// have extra content; such as a custom button that you want the user to be able to interact with (as usually
-    /// the default thumb will handle mouse interaction).
-    /// </summary>
-    public static readonly DependencyProperty IsCustomThumbProperty = DependencyProperty.RegisterAttached(
-        "IsCustomThumb", typeof (bool), typeof (DragablzItem), new PropertyMetadata(default(bool), IsCustomThumbPropertyChangedCallback));
+    
 
-    private static void IsCustomThumbPropertyChangedCallback(DependencyObject dependencyObject, DependencyPropertyChangedEventArgs dependencyPropertyChangedEventArgs)
-    {
-        var thumb = dependencyObject as Thumb;
-        if (thumb == null) throw new ApplicationException("IsCustomThumb can only be applied to a thumb");
-
-        if (thumb.IsLoaded)
-            ApplyCustomThumbSetting(thumb);
-        else
-            thumb.Loaded += CustomThumbOnLoaded;
-    }        
-
-    /// <summary>
-    /// <see cref="DragablzItem" /> templates contain a thumb, which is used to drag the item around.
-    /// For most scenarios this is fine, but by setting this flag to <value>true</value> you can define
-    /// a custom thumb in your content, without having to override the template.  This can be useful if you
-    /// have extra content; such as a custom button that you want the user to be able to interact with (as usually
-    /// the default thumb will handle mouse interaction).
-    /// </summary>
-    public static void SetIsCustomThumb(Thumb element, bool value)
-    {
-        element.SetValue(IsCustomThumbProperty, value);
-    }
-
-    public static bool GetIsCustomThumb(Thumb element)
-    {
-        return (bool) element.GetValue(IsCustomThumbProperty);
-    }
-
-    private bool _isTemplateThumbWithMouseAfterSeize = false;
-    public override void OnApplyTemplate()
-    {
-        base.OnApplyTemplate();                        
-            
-        var thumbAndSubscription = SelectAndSubscribeToThumb();
-        _templateSubscriptions.Disposable = thumbAndSubscription.Item2;
-            
-        if (_seizeDragWithTemplate && thumbAndSubscription.Item1 != null)
-        {
-            _isTemplateThumbWithMouseAfterSeize = true;
-            Mouse.AddLostMouseCaptureHandler(this, LostMouseAfterSeizeHandler);
-            if (_dragSeizedContinuation != null)
-                _dragSeizedContinuation(this);
-            _dragSeizedContinuation = null;
-
-            Dispatcher.BeginInvoke(new Action(() => thumbAndSubscription.Item1.RaiseEvent(new MouseButtonEventArgs(InputManager.Current.PrimaryMouseDevice,
-                0,
-                MouseButton.Left) {RoutedEvent = MouseLeftButtonDownEvent})));
-        }
-        _seizeDragWithTemplate = false;
-    }
+   
+   
 
     protected override void OnPreviewMouseRightButtonDown(MouseButtonEventArgs e)
     {            
@@ -518,40 +534,9 @@ public class DragablzItem : ContentControl
             _seizeDragWithTemplate = true;
     }
 
-    internal Point MouseAtDragStart { get; set; }
+   
 
-    internal string PartitionAtDragStart { get; set; }
-
-    internal bool IsDropTargetFound { get; set; }
-
-    private void ThumbOnDragCompleted(object sender, DragCompletedEventArgs dragCompletedEventArgs)
-    {            
-        OnDragCompleted(dragCompletedEventArgs);
-        MouseAtDragStart = new Point();
-    }        
-
-    private void ThumbOnDragDelta(object sender, DragDeltaEventArgs dragDeltaEventArgs)
-    {
-        var thumb = (Thumb) sender;
-
-        var previewEventArgs = new DragablzDragDeltaEventArgs(PreviewDragDelta, this, dragDeltaEventArgs);
-        OnPreviewDragDelta(previewEventArgs);            
-        if (previewEventArgs.Cancel)
-            thumb.CancelDrag();
-        if (!previewEventArgs.Handled)
-        {
-            var eventArgs = new DragablzDragDeltaEventArgs(DragDelta, this, dragDeltaEventArgs);
-            OnDragDelta(eventArgs);
-            if (eventArgs.Cancel)
-                thumb.CancelDrag();
-        }
-    }
-        
-    private void ThumbOnDragStarted(object sender, DragStartedEventArgs dragStartedEventArgs)
-    {
-        MouseAtDragStart = Mouse.GetPosition(this);
-        OnDragStarted(new DragablzDragStartedEventArgs(DragStarted, this, dragStartedEventArgs));            
-    }
+   
 
     private void MouseDownHandler(object sender, RoutedEventArgs routedEventArgs)
     {
@@ -570,43 +555,100 @@ public class DragablzItem : ContentControl
         return this.VisualTreeDepthFirstTraversal().OfType<Thumb>().FirstOrDefault(GetIsCustomThumb);
     }        
 
-    private static void ApplyCustomThumbSetting(Thumb thumb)
-    {            
-        var dragablzItem = thumb.VisualTreeAncestory().OfType<DragablzItem>().FirstOrDefault();
-        if (dragablzItem == null) throw new ApplicationException("Cannot find parent DragablzItem for custom thumb");
+  
 
-        var enableCustomThumb = (bool)thumb.GetValue(IsCustomThumbProperty);
-        dragablzItem._customThumb = enableCustomThumb ? thumb : null;
-        dragablzItem._templateSubscriptions.Disposable = dragablzItem.SelectAndSubscribeToThumb().Item2;
+  
 
-        if (dragablzItem._customThumb != null && dragablzItem._isTemplateThumbWithMouseAfterSeize)
-            dragablzItem.Dispatcher.BeginInvoke(new Action(() => dragablzItem._customThumb.RaiseEvent(new MouseButtonEventArgs(InputManager.Current.PrimaryMouseDevice,
-                0,
-                MouseButton.Left) { RoutedEvent = MouseLeftButtonDownEvent })));
-    }
+    */
 
-    private Tuple<Thumb, IDisposable> SelectAndSubscribeToThumb()
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
-        var templateThumb = GetTemplateChild(ThumbPartName) as Thumb;
-        templateThumb?.SetCurrentValue(IsHitTestVisibleProperty, _customThumb == null);
-            
-        _thumb = _customThumb ?? templateThumb;
-        if (_thumb != null)
+        base.OnApplyTemplate(e);
+
+        var (thumb, disposable) = SelectAndSubscribeToThumb(e);
+        _templateSubscriptions.Disposable = disposable;
+
+        if (_seizeDragWithTemplate)
         {
-            _thumb.DragStarted += ThumbOnDragStarted;
-            _thumb.DragDelta += ThumbOnDragDelta;
-            _thumb.DragCompleted += ThumbOnDragCompleted;
+            _isTemplateThumbWithMouseAfterSeize = true;
+            //Mouse.AddLostMouseCaptureHandler(this, LostMouseAfterSeizeHandler);
+            if (_dragSeizedContinuation != null)
+                _dragSeizedContinuation(this);
+            _dragSeizedContinuation = null;
+
+            //Dispatcher.BeginInvoke(new Action(() => thumb.RaiseEvent(new MouseButtonEventArgs(InputManager.Current.PrimaryMouseDevice,
+            //        0,
+            //        MouseButton.Left)
+            //{ RoutedEvent = MouseLeftButtonDownEvent })));
         }
+        _seizeDragWithTemplate = false;
+    }
+    
+    private Tuple<Thumb, IDisposable> SelectAndSubscribeToThumb(TemplateAppliedEventArgs e)
+    {   
+        var templateThumb = e.Find<Thumb>(ThumbPartName);
+        templateThumb.SetValue(IsHitTestVisibleProperty, _customThumb == null);
+
+        _thumb = _customThumb ?? templateThumb;
+
+        _thumb.DragStarted += ThumbOnDragStarted;
+        _thumb.DragDelta += ThumbOnDragDelta;
+        _thumb.DragCompleted += ThumbOnDragCompleted;
 
         var tidyUpThumb = _thumb;
+
         var disposable = Disposable.Create(() =>
         {
-            if (tidyUpThumb == null) return;
             tidyUpThumb.DragStarted -= ThumbOnDragStarted;
             tidyUpThumb.DragDelta -= ThumbOnDragDelta;
             tidyUpThumb.DragCompleted -= ThumbOnDragCompleted;
         });
 
         return new Tuple<Thumb, IDisposable>(_thumb, disposable);
+    }
+
+    private void ThumbOnDragCompleted(object? sender, VectorEventArgs dragCompletedEventArgs)
+    {
+        //OnDragCompleted(dragCompletedEventArgs);
+        MouseAtDragStart = new Point();
+    }
+
+    private void ThumbOnDragDelta(object? sender, VectorEventArgs dragDeltaEventArgs)
+    {
+        var thumb = (Thumb)sender;
+
+        //var previewEventArgs = new DragablzDragDeltaEventArgs(PreviewDragDelta, this, dragDeltaEventArgs);
+        //OnPreviewDragDelta(previewEventArgs);
+        //if (previewEventArgs.Cancel)
+        //    thumb.CancelDrag();
+        //if (!previewEventArgs.Handled)
+        //{
+        //    var eventArgs = new DragablzDragDeltaEventArgs(DragDelta, this, dragDeltaEventArgs);
+        //    OnDragDelta(eventArgs);
+        //    if (eventArgs.Cancel)
+        //        thumb.CancelDrag();
+        //}
+    }
+
+    private void ThumbOnDragStarted(object? sender, VectorEventArgs dragStartedEventArgs)
+    {
+        //MouseAtDragStart = Mouse.GetPosition(this);
+        //OnDragStarted(new DragablzDragStartedEventArgs(DragStarted, this, dragStartedEventArgs));
+    }
+
+    private static void ApplyCustomThumbSetting(Thumb thumb)
+    {
+        var dragablzItem = thumb.VisualTreeAncestory().OfType<DragablzItem>().FirstOrDefault();
+        if (dragablzItem == null) throw new ApplicationException("Cannot find parent DragablzItem for custom thumb");
+
+        var enableCustomThumb = (bool)thumb.GetValue(IsCustomThumbProperty);
+        dragablzItem._customThumb = enableCustomThumb ? thumb : null;
+        dragablzItem._templateSubscriptions.Disposable = dragablzItem._templateSubscriptions.Disposable;
+
+        //if (dragablzItem._customThumb != null && dragablzItem._isTemplateThumbWithMouseAfterSeize)
+        //    dragablzItem.Dispatcher.BeginInvoke(new Action(() => dragablzItem._customThumb.RaiseEvent(new MouseButtonEventArgs(InputManager.Current.PrimaryMouseDevice,
+        //            0,
+        //            MouseButton.Left)
+        //        { RoutedEvent = MouseLeftButtonDownEvent })));
     }
 }

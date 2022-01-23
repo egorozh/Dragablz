@@ -8,6 +8,7 @@ public class Trapezoid : ContentControl
 {
     private PathGeometry _pathGeometry;
 
+    /*
     static Trapezoid()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(Trapezoid), new FrameworkPropertyMetadata(typeof(Trapezoid)));
@@ -133,4 +134,5 @@ public class Trapezoid : ContentControl
             MiterLimit = 1
         }, new LineGeometry(_pathGeometry.Bounds.BottomLeft + new Vector(3, 0), _pathGeometry.Bounds.BottomRight + new Vector(-3, 0)));
     }
+    */
 }

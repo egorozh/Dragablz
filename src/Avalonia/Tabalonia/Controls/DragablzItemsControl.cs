@@ -14,6 +14,7 @@ public class DragablzItemsControl : ItemsControl
 {        
     private object[] _previousSortQueryResult;
 
+    /*
     static DragablzItemsControl()
     {
         DefaultStyleKeyProperty.OverrideMetadata(typeof(DragablzItemsControl), new FrameworkPropertyMetadata(typeof(DragablzItemsControl)));            
@@ -393,4 +394,5 @@ public class DragablzItemsControl : ItemsControl
         //extra kick
         Dispatcher.BeginInvoke(new Action(InvalidateMeasure), DispatcherPriority.Loaded);
     }
+    */
 }

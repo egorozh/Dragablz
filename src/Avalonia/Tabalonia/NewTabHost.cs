@@ -1,8 +1,9 @@
 ﻿using System;
+using Avalonia;
 
 namespace Tabalonia;
 
-public class NewTabHost<TElement> : INewTabHost<TElement> where TElement : UIElement
+public class NewTabHost<TElement> : INewTabHost<TElement> where TElement : IAvaloniaObject
 {
     public NewTabHost(TElement container, TabablzControl tabablzControl)
     {

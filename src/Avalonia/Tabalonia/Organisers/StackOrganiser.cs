@@ -14,7 +14,7 @@ public abstract class StackOrganiser : IItemsOrganiser
     private readonly double _itemOffset;
     private readonly Func<DragablzItem, double> _getDesiredSize;
     private readonly Func<DragablzItem, double> _getLocation;
-    private readonly DependencyProperty _canvasDependencyProperty;
+    private readonly AvaloniaProperty _canvasDependencyProperty;
     private readonly Action<DragablzItem, double> _setLocation;
 
     private readonly Dictionary<DragablzItem, double> _activeStoryboardTargetLocations =

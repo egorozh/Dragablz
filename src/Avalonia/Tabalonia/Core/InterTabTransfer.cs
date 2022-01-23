@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using Avalonia;
+using Avalonia.Layout;
+using Tabalonia.Dockablz;
 
 namespace Tabalonia.Core;
 
