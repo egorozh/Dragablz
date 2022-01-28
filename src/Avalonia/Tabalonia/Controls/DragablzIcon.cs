@@ -1,7 +1,6 @@
-﻿using System;
-using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
+﻿using Avalonia.Controls.Primitives;
 using Avalonia.Styling;
+using System;
 
 namespace Tabalonia;
 

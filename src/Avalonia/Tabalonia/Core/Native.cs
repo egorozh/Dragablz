@@ -73,8 +73,9 @@ internal static class Native
     {
         var windowsByHandle = windows.Select(window =>
             {
-                var hwndSource = PresentationSource.FromVisual(window) as HwndSource;
-                var handle = hwndSource != null ? hwndSource.Handle : IntPtr.Zero;
+                //var hwndSource = PresentationSource.FromVisual(window) as HwndSource;
+                //var handle = hwndSource != null ? hwndSource.Handle : IntPtr.Zero;
+                var handle = IntPtr.Zero;
                 return new {window, handle};
             }).Where(x => x.handle != IntPtr.Zero)
             .ToDictionary(x => x.handle, x => x.window);

@@ -33,9 +33,45 @@ public class Layout : ContentControl
     private const string LeftDropZonePartName = "PART_LeftDropZone";
     private const string FloatingDropZonePartName = "PART_FloatDropZone";
     private const string FloatingContentPresenterPartName = "PART_FloatContentPresenter";
-    
+
+    #region Private Fields
+
     private readonly IDictionary<DropZoneLocation, DropZone> _dropZones = new Dictionary<DropZoneLocation, DropZone>();
     private static Tuple<Layout, DropZone> _currentlyOfferedDropZone;
+    private readonly DragablzItemsControl _floatingItems;
+    private static bool _isDragOpWireUpPending;
+    private FloatTransfer _floatTransfer;
+
+    #endregion
+    
+    #region Attached Properties
+
+    public static readonly AttachedProperty<WindowState> FloatingItemStateProperty =
+        AvaloniaProperty.RegisterAttached<Layout, IAvaloniaObject, WindowState>("FloatingItemState");
+    
+    public static void SetFloatingItemState(IAvaloniaObject element, WindowState value) 
+        => element.SetValue(FloatingItemStateProperty, value);
+
+    public static WindowState GetFloatingItemState(IAvaloniaObject element) 
+        => element.GetValue(FloatingItemStateProperty);
+
+    #endregion
+
+    #region Public Static Methods
+
+    /// <summary>
+    /// Helper method to get all the currently loaded layouts.
+    /// </summary>
+    /// <returns></returns>
+    public static IEnumerable<Layout> GetLoadedInstances() => LoadedLayouts.ToList();
+
+    #endregion
+
+    #region Internal Methods
+
+    internal IEnumerable<DragablzItem> FloatingDragablzItems() => _floatingItems.DragablzItems();
+
+    #endregion
 
     /*
 
@@ -47,9 +83,7 @@ public class Layout : ContentControl
     public static RoutedCommand TileFloatingItemsVerticallyCommand = new RoutedCommand();
     public static RoutedCommand TileFloatingItemsHorizontallyCommand = new RoutedCommand();
         
-    private readonly DragablzItemsControl _floatingItems;
-    private static bool _isDragOpWireUpPending;
-    private FloatTransfer _floatTransfer;
+    
 
     static Layout()
     {
@@ -101,14 +135,7 @@ public class Layout : ContentControl
         _floatingItems.SetBinding(ItemsControl.ItemContainerStyleSelectorProperty, floatingItemContainerStyleSelectorBinding);
     }
 
-    /// <summary>
-    /// Helper method to get all the currently loaded layouts.
-    /// </summary>
-    /// <returns></returns>
-    public static IEnumerable<Layout> GetLoadedInstances()
-    {
-        return LoadedLayouts.ToList();
-    }        
+       
 
     /// <summary>
     /// Finds the location of a tab control withing a layout.
@@ -418,10 +445,7 @@ public class Layout : ContentControl
         _dropZones[DropZoneLocation.Floating] = GetTemplateChild(FloatingDropZonePartName) as DropZone;
     }
 
-    internal IEnumerable<DragablzItem> FloatingDragablzItems()
-    {
-        return _floatingItems.DragablzItems();
-    }
+    
 
     internal static void RestoreFloatingItemSnapShots(DependencyObject ancestor, IEnumerable<FloatingItemSnapShot> floatingItemSnapShots)
     {
@@ -798,18 +822,9 @@ public class Layout : ContentControl
         Tiler.TileVertically(dragablzItems, new Size(_floatingItems.ActualWidth, _floatingItems.ActualHeight));
     }
 
-    public static readonly DependencyProperty FloatingItemStateProperty = DependencyProperty.RegisterAttached(
-        "FloatingItemState", typeof (WindowState), typeof (Layout), new PropertyMetadata(default(WindowState)));
+   
 
-    public static void SetFloatingItemState(DependencyObject element, WindowState value)
-    {
-        element.SetValue(FloatingItemStateProperty, value);
-    }
-
-    public static WindowState GetFloatingItemState(DependencyObject element)
-    {
-        return (WindowState) element.GetValue(FloatingItemStateProperty);
-    }
+   
 
     internal static readonly DependencyProperty LocationSnapShotProperty = DependencyProperty.RegisterAttached(
         "LocationSnapShot", typeof (LocationSnapShot), typeof (Layout), new PropertyMetadata(default(LocationSnapShot)));

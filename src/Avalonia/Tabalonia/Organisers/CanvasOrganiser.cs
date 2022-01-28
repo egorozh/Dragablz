@@ -21,12 +21,12 @@ public class CanvasOrganiser : IItemsOrganiser
     public virtual void OrganiseOnMouseDownWithin(DragablzItemsControl requestor, Size measureBounds, List<DragablzItem> siblingItems, DragablzItem dragablzItem)
     {
         var zIndex = int.MaxValue;
-        foreach (var source in siblingItems.OrderByDescending(Panel.GetZIndex))
+        foreach (var source in siblingItems.OrderByDescending(i => i.ZIndex))
         {
-            Panel.SetZIndex(source, --zIndex);
-
+            source.ZIndex = --zIndex;
         }
-        Panel.SetZIndex(dragablzItem, int.MaxValue);
+
+        dragablzItem.ZIndex = int.MaxValue;
     }
 
     public virtual void OrganiseOnDragStarted(DragablzItemsControl requestor, Size measureBounds, IEnumerable<DragablzItem> siblingItems, DragablzItem dragItem)

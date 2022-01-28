@@ -5,6 +5,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Data.Core;
 using Avalonia.Layout;
+using Dragablz.Core;
 
 namespace Tabalonia;
 
@@ -17,8 +18,7 @@ public abstract class StackOrganiser : IItemsOrganiser
     private readonly AvaloniaProperty _canvasDependencyProperty;
     private readonly Action<DragablzItem, double> _setLocation;
 
-    private readonly Dictionary<DragablzItem, double> _activeStoryboardTargetLocations =
-        new Dictionary<DragablzItem, double>();
+    private readonly Dictionary<DragablzItem, double> _activeStoryboardTargetLocations = new();
 
     protected StackOrganiser(Orientation orientation, double itemOffset = 0)
     {
@@ -30,13 +30,13 @@ public abstract class StackOrganiser : IItemsOrganiser
             case Orientation.Horizontal:
                 _getDesiredSize = item => item.DesiredSize.Width;
                 _getLocation = item => item.X;
-                _setLocation = (item, coord) => item.SetCurrentValue(DragablzItem.XProperty, coord);
+                _setLocation = (item, coord) => item.SetValue(DragablzItem.XProperty, coord);
                 _canvasDependencyProperty = Canvas.LeftProperty;
                 break;
             case Orientation.Vertical:
                 _getDesiredSize = item => item.DesiredSize.Height;
                 _getLocation = item => item.Y;
-                _setLocation = (item, coord) => item.SetCurrentValue(DragablzItem.YProperty, coord);
+                _setLocation = (item, coord) => item.SetValue(DragablzItem.YProperty, coord);
                 _canvasDependencyProperty = Canvas.TopProperty;
                 break;
             default:
@@ -101,7 +101,7 @@ public abstract class StackOrganiser : IItemsOrganiser
         var logicalIndex = 0;
         foreach (var newItem in items)
         {
-            Panel.SetZIndex(newItem, newItem.IsSelected ? int.MaxValue : --z);
+            newItem.ZIndex = newItem.IsSelected ? int.MaxValue : --z;
             SetLocation(newItem, currentCoord);
             newItem.LogicalIndex = logicalIndex++;
             newItem.Measure(measureBounds);
@@ -147,11 +147,12 @@ public abstract class StackOrganiser : IItemsOrganiser
             if (!Equals(location.Item, dragItem))
             {
                 SendToLocation(location.Item, currentCoord);
-                Panel.SetZIndex(location.Item, --zIndex);
+                location.Item.ZIndex = --zIndex;
             }
             currentCoord += _getDesiredSize(location.Item) + _itemOffset;                
         }
-        Panel.SetZIndex(dragItem, int.MaxValue);
+
+        dragItem.ZIndex = int.MaxValue;
     }
 
     public virtual void OrganiseOnDragCompleted(DragablzItemsControl requestor, Size measureBounds,
@@ -170,10 +171,11 @@ public abstract class StackOrganiser : IItemsOrganiser
         {
             SetLocation(location.Item, currentCoord);
             currentCoord += _getDesiredSize(location.Item) + _itemOffset;
-            Panel.SetZIndex(location.Item, --z);
+            location.Item.ZIndex = --z;
             location.Item.LogicalIndex = logicalIndex++;
         }
-        Panel.SetZIndex(dragItem, int.MaxValue);
+
+        dragItem.ZIndex = int.MaxValue;
     }
 
     public virtual Point ConstrainLocation(DragablzItemsControl requestor, Size measureBounds, Point itemCurrentLocation,
@@ -207,22 +209,22 @@ public abstract class StackOrganiser : IItemsOrganiser
         foreach (var dragablzItem in items)
         {
             dragablzItem.Measure(size);
-            if (_orientation == Orientation.Horizontal)
-            {
-                width += !dragablzItem.IsLoaded ? dragablzItem.DesiredSize.Width : dragablzItem.ActualWidth;
-                if (!isFirst)
-                    width += _itemOffset;
-                height = Math.Max(height,
-                    !dragablzItem.IsLoaded ? dragablzItem.DesiredSize.Height : dragablzItem.ActualHeight);
-            }
-            else
-            {
-                width = Math.Max(width,
-                    !dragablzItem.IsLoaded ? dragablzItem.DesiredSize.Width : dragablzItem.ActualWidth);
-                height += !dragablzItem.IsLoaded ? dragablzItem.DesiredSize.Height : dragablzItem.ActualHeight;
-                if (!isFirst)
-                    height += _itemOffset;
-            }
+            //if (_orientation == Orientation.Horizontal)
+            //{
+            //    width += !dragablzItem.IsLoaded ? dragablzItem.DesiredSize.Width : dragablzItem.Bounds.Width;
+            //    if (!isFirst)
+            //        width += _itemOffset;
+            //    height = Math.Max(height,
+            //        !dragablzItem.IsLoaded ? dragablzItem.DesiredSize.Height : dragablzItem.Bounds.Height);
+            //}
+            //else
+            //{
+            //    width = Math.Max(width,
+            //        !dragablzItem.IsLoaded ? dragablzItem.DesiredSize.Width : dragablzItem.Bounds.Width);
+            //    height += !dragablzItem.IsLoaded ? dragablzItem.DesiredSize.Height : dragablzItem.Bounds.Height;
+            //    if (!isFirst)
+            //        height += _itemOffset;
+            //}
 
             isFirst = false;
         }
@@ -255,30 +257,29 @@ public abstract class StackOrganiser : IItemsOrganiser
 
         _activeStoryboardTargetLocations[dragablzItem] = location;
 
-        var storyboard = new Storyboard {FillBehavior = FillBehavior.Stop};
-        storyboard.WhenComplete(sb =>
-        {
-            _setLocation(dragablzItem, location);
-            sb.Remove(dragablzItem);
-            _activeStoryboardTargetLocations.Remove(dragablzItem);
-        });
+        //var storyboard = new Storyboard {FillBehavior = FillBehavior.Stop};
+        //storyboard.WhenComplete(sb =>
+        //{
+        //    _setLocation(dragablzItem, location);
+        //    sb.Remove(dragablzItem);
+        //    _activeStoryboardTargetLocations.Remove(dragablzItem);
+        //});
 
-        var timeline = new DoubleAnimationUsingKeyFrames();
-        timeline.SetValue(Storyboard.TargetPropertyProperty, new PropertyPath(_canvasDependencyProperty));
-        timeline.KeyFrames.Add(
-            new EasingDoubleKeyFrame(location, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200)))
-            {
-                EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut }
-            });
-        storyboard.Children.Add(timeline);            
-        storyboard.Begin(dragablzItem, true);            
+        //var timeline = new DoubleAnimationUsingKeyFrames();
+        //timeline.SetValue(Storyboard.TargetPropertyProperty, new PropertyPath(_canvasDependencyProperty));
+        //timeline.KeyFrames.Add(
+        //    new EasingDoubleKeyFrame(location, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200)))
+        //    {
+        //        EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut }
+        //    });
+        //storyboard.Children.Add(timeline);            
+        //storyboard.Begin(dragablzItem, true);            
     }
 
     private LocationInfo GetLocationInfo(DragablzItem item)
     {
         var size = _getDesiredSize(item);
-        double startLocation;
-        if (!_activeStoryboardTargetLocations.TryGetValue(item, out startLocation))
+        if (!_activeStoryboardTargetLocations.TryGetValue(item, out var startLocation))
             startLocation = _getLocation(item);
         var midLocation = startLocation + size / 2;
         var endLocation = startLocation + size;

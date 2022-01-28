@@ -1,6 +1,7 @@
 ﻿using System;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 
 namespace Tabalonia.Dockablz;
 
@@ -23,8 +24,8 @@ internal class FloatingItemSnapShot
 
         return new FloatingItemSnapShot(
             dragablzItem.Content, 
-            new Rect(dragablzItem.X, dragablzItem.Y, dragablzItem.ActualWidth, dragablzItem.ActualHeight), 
-            Panel.GetZIndex(dragablzItem),
+            new Rect(dragablzItem.X, dragablzItem.Y, dragablzItem.Bounds.Width, dragablzItem.Bounds.Height),
+            dragablzItem.GetValue(Visual.ZIndexProperty),
             Layout.GetFloatingItemState(dragablzItem));
     }
 
@@ -32,12 +33,12 @@ internal class FloatingItemSnapShot
     {
         if (dragablzItem == null) throw new ArgumentNullException(nameof(dragablzItem));
 
-        dragablzItem.SetCurrentValue(DragablzItem.XProperty, Location.Left);
-        dragablzItem.SetCurrentValue(DragablzItem.YProperty, Location.Top);
-        dragablzItem.SetCurrentValue(FrameworkElement.WidthProperty, Location.Width);
-        dragablzItem.SetCurrentValue(FrameworkElement.HeightProperty, Location.Height);
+        dragablzItem.SetValue(DragablzItem.XProperty, Location.Left);
+        dragablzItem.SetValue(DragablzItem.YProperty, Location.Top);
+        dragablzItem.SetValue(Layoutable.WidthProperty, Location.Width);
+        dragablzItem.SetValue(Layoutable.HeightProperty, Location.Height);
         Layout.SetFloatingItemState(dragablzItem, State);
-        Panel.SetZIndex(dragablzItem, ZIndex);
+        dragablzItem.SetValue(Visual.ZIndexProperty, ZIndex);
     }
 
     public object Content { get; }

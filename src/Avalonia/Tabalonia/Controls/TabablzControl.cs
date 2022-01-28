@@ -15,10 +15,10 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Reactive.Disposables;
+using Tabalonia.Core;
 using Rect = Avalonia.Rect;
 
 namespace Tabalonia;
-//original code specific to keeping visual tree "alive" sourced from http://stackoverflow.com/questions/12432062/binding-to-itemssource-of-tabcontrol-in-wpf    
 
 /// <summary>
 /// Extended tab control which supports tab repositioning, and drag and drop.  Also 
@@ -26,16 +26,55 @@ namespace Tabalonia;
 /// </summary>
 //[TemplatePart(Name = HeaderItemsControlPartName, Type = typeof(DragablzItemsControl))]
 //[TemplatePart(Name = ItemsHolderPartName, Type = typeof(Panel))]
-public class TabablzControl : TabControl
+public class TabablzControl : TabControl, IStyleable
 {
     /// <summary>
     /// Template part.
     /// </summary>
     public const string HeaderItemsControlPartName = "PART_HeaderItemsControl";
+
     /// <summary>
     /// Template part.
     /// </summary>
     public const string ItemsHolderPartName = "PART_ItemsHolder";
+
+    #region Private Fields
+
+    private static readonly HashSet<TabablzControl> LoadedInstances = new();
+    private static readonly HashSet<TabablzControl> VisibleInstances = new();
+
+    private Panel _itemsHolder;
+    private TabHeaderDragStartInformation _tabHeaderDragStartInformation;
+    private WeakReference _previousSelection;
+    private DragablzItemsControl _dragablzItemsControl;
+    private IDisposable _templateSubscription;
+    private readonly SerialDisposable _windowSubscription = new();
+
+    private InterTabTransfer _interTabTransfer;
+
+    #endregion
+
+    #region IStyleable
+
+    Type IStyleable.StyleKey => typeof(TabablzControl);
+
+    #endregion
+
+    #region Public Properties
+
+    /// <summary>
+    /// An <see cref="InterTabController"/> must be provided to enable tab tearing. Behaviour customisations can be applied
+    /// vie the controller.
+    /// </summary>
+    public InterTabController InterTabController
+    {
+        get;
+        set;
+        //get => (InterTabController)GetValue(InterTabControllerProperty);
+        //set => SetValue(InterTabControllerProperty, value);
+    }
+
+    #endregion
 
     /*
     /// <summary>
@@ -48,21 +87,10 @@ public class TabablzControl : TabControl
     /// </summary>
     public static RoutedCommand AddItemCommand = new RoutedUICommand("Add", "Add", typeof(TabablzControl));
 
-    private static readonly HashSet<TabablzControl> LoadedInstances = new HashSet<TabablzControl>();
-    private static readonly HashSet<TabablzControl> VisibleInstances = new HashSet<TabablzControl>();
-
-    private Panel _itemsHolder;
-    private TabHeaderDragStartInformation _tabHeaderDragStartInformation;
-    private WeakReference _previousSelection;        
-    private DragablzItemsControl _dragablzItemsControl;
-    private IDisposable _templateSubscription;
-    private readonly SerialDisposable _windowSubscription = new SerialDisposable();
-
-    private InterTabTransfer _interTabTransfer;
+  
 
     static TabablzControl()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(TabablzControl), new FrameworkPropertyMetadata(typeof(TabablzControl)));
+    {       
         CommandManager.RegisterClassCommandBinding(typeof(FrameworkElement), new CommandBinding(CloseItemCommand, CloseItemClassHandler, CloseItemCanExecuteClassHandler));
     }
         
@@ -384,15 +412,7 @@ public class TabablzControl : TabControl
             instance.AddLogicalChild(dependencyPropertyChangedEventArgs.NewValue);
     }
 
-    /// <summary>
-    /// An <see cref="InterTabController"/> must be provided to enable tab tearing. Behaviour customisations can be applied
-    /// vie the controller.
-    /// </summary>
-    public InterTabController InterTabController
-    {
-        get => (InterTabController) GetValue(InterTabControllerProperty);
-        set => SetValue(InterTabControllerProperty, value);
-    }
+    
 
     /// <summary>
     /// Allows a factory to be provided for generating new items. Typically used in conjunction with <see cref="AddItemCommand"/>.

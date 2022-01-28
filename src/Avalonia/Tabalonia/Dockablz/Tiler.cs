@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Layout;
 using Dragablz.Dockablz;
 
 namespace Tabalonia.Dockablz;
@@ -13,7 +14,7 @@ internal class Tiler
     {
         if (dragablzItems == null) throw new ArgumentNullException(nameof(dragablzItems));            
 
-        var items = new Queue<DragablzItem>(dragablzItems.OrderBy(Panel.GetZIndex));
+        var items = new Queue<DragablzItem>(dragablzItems.OrderBy(di => di.ZIndex));
 
         var cellCountPerColumn = TilerCalculator.GetCellCountPerColumn(items.Count());
         var x = 0d;
@@ -26,10 +27,10 @@ internal class Tiler
             {
                 var item = items.Dequeue();
                 Layout.SetFloatingItemState(item, WindowState.Normal);
-                item.SetCurrentValue(DragablzItem.XProperty, x);
-                item.SetCurrentValue(DragablzItem.YProperty, y);
-                item.SetCurrentValue(FrameworkElement.WidthProperty, cellWidth);
-                item.SetCurrentValue(FrameworkElement.HeightProperty, cellHeight);
+                item.SetValue(DragablzItem.XProperty, x);
+                item.SetValue(DragablzItem.YProperty, y);
+                item.SetValue(Layoutable.WidthProperty, cellWidth);
+                item.SetValue(Layoutable.HeightProperty, cellHeight);
 
                 y += cellHeight;
             }
@@ -49,11 +50,11 @@ internal class Tiler
         foreach (var dragablzItem in items)
         {
             Layout.SetFloatingItemState(dragablzItem, WindowState.Normal);
-            dragablzItem.SetCurrentValue(DragablzItem.XProperty, x);
-            dragablzItem.SetCurrentValue(DragablzItem.YProperty, 0d);
+            dragablzItem.SetValue(DragablzItem.XProperty, x);
+            dragablzItem.SetValue(DragablzItem.YProperty, 0d);
             x += width;
-            dragablzItem.SetCurrentValue(FrameworkElement.WidthProperty, width);
-            dragablzItem.SetCurrentValue(FrameworkElement.HeightProperty, bounds.Height);
+            dragablzItem.SetValue(Layoutable.WidthProperty, width);
+            dragablzItem.SetValue(Layoutable.HeightProperty, bounds.Height);
         }
     }
 
@@ -68,11 +69,11 @@ internal class Tiler
         foreach (var dragablzItem in items)
         {
             Layout.SetFloatingItemState(dragablzItem, WindowState.Normal);
-            dragablzItem.SetCurrentValue(DragablzItem.YProperty, y);
-            dragablzItem.SetCurrentValue(DragablzItem.XProperty, 0d);
+            dragablzItem.SetValue(DragablzItem.YProperty, y);
+            dragablzItem.SetValue(DragablzItem.XProperty, 0d);
             y += height;
-            dragablzItem.SetCurrentValue(FrameworkElement.HeightProperty, height);
-            dragablzItem.SetCurrentValue(FrameworkElement.WidthProperty, bounds.Width);
+            dragablzItem.SetValue(Layoutable.HeightProperty, height);
+            dragablzItem.SetValue(Layoutable.WidthProperty, bounds.Width);
         }
     }
 

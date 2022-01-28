@@ -6,7 +6,7 @@ public delegate void FloatRequestedEventHandler(object sender, FloatRequestedEve
 
 public class FloatRequestedEventArgs : DragablzItemEventArgs
 {
-    public FloatRequestedEventArgs(RoutedEvent routedEvent, object source, DragablzItem dragablzItem) 
+    public FloatRequestedEventArgs(RoutedEvent routedEvent, IInteractive source, DragablzItem dragablzItem) 
         : base(routedEvent, source, dragablzItem)
     { }
 

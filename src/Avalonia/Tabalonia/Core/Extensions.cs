@@ -22,10 +22,12 @@ internal static class Extensions
     public static IEnumerable<TContainer> Containers<TContainer>(this ItemsControl itemsControl)
         where TContainer : class
     {
-        for (var i = 0; i < itemsControl.ItemContainerGenerator.Items.Count; i++)
+        var itemGen = itemsControl.ItemContainerGenerator;
+
+        foreach (var container in itemGen.Containers)
         {
-            if (itemsControl.ItemContainerGenerator.ContainerFromIndex(i) is TContainer container)
-                yield return container;
+            if (container is TContainer c)
+                yield return c;
         }
     }
 
@@ -39,9 +41,9 @@ internal static class Extensions
         if (node == null) yield break;
         yield return node;
 
-        foreach (var child in LogicalTreeHelper.GetChildren(node).OfType<IAvaloniaObject>()
-                     .SelectMany(depObj => depObj.LogicalTreeDepthFirstTraversal()))
-            yield return child;
+        //foreach (var child in LogicalTreeHelper.GetChildren(node).OfType<IAvaloniaObject>()
+        //             .SelectMany(depObj => depObj.LogicalTreeDepthFirstTraversal()))
+        //    yield return child;
     }
 
     public static IEnumerable<object> VisualTreeDepthFirstTraversal(this IAvaloniaObject? node)
@@ -49,14 +51,14 @@ internal static class Extensions
         if (node == null) yield break;
         yield return node;
 
-        for (var i = 0; i < VisualTreeHelper.GetChildrenCount(node); i++)
-        {
-            var child = VisualTreeHelper.GetChild(node, i);
-            foreach (var d in child.VisualTreeDepthFirstTraversal())
-            {
-                yield return d;
-            }
-        }
+        //for (var i = 0; i < VisualTreeHelper.GetChildrenCount(node); i++)
+        //{
+            //var child = VisualTreeHelper.GetChild(node, i);
+            //foreach (var d in child.VisualTreeDepthFirstTraversal())
+            //{
+            //    yield return d;
+            //}
+        //}
     }
 
     /// <summary>
@@ -71,7 +73,7 @@ internal static class Extensions
         while (dependencyObject != null)
         {
             yield return dependencyObject;
-            dependencyObject = VisualTreeHelper.GetParent(dependencyObject);
+            //dependencyObject = VisualTreeHelper.GetParent(dependencyObject);
         }
     }
 
@@ -87,7 +89,7 @@ internal static class Extensions
         while (dependencyObject != null)
         {
             yield return dependencyObject;
-            dependencyObject = LogicalTreeHelper.GetParent(dependencyObject);
+            //dependencyObject = LogicalTreeHelper.GetParent(dependencyObject);
         }
     }
 
@@ -105,7 +107,7 @@ internal static class Extensions
             return leftField?.GetValue(window) as double? ?? 0;
         }
 
-        return window.Left;
+        return window.Position.X;
     }
 
     /// <summary>
@@ -122,6 +124,6 @@ internal static class Extensions
             return topField?.GetValue(window) as double? ?? 0;
         }
 
-        return window.Top;
+        return window.Position.Y;
     }
 }

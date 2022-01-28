@@ -1,4 +1,5 @@
 using System;
+using Avalonia.Input;
 using Avalonia.Interactivity;
 
 namespace Tabalonia;
@@ -7,25 +8,25 @@ public delegate void DragablzDragDeltaEventHandler(object sender, DragablzDragDe
 
 public class DragablzDragDeltaEventArgs : DragablzItemEventArgs
 {
-    public DragablzDragDeltaEventArgs(DragablzItem dragablzItem, DragDeltaEventArgs dragDeltaEventArgs)
+    public DragablzDragDeltaEventArgs(DragablzItem dragablzItem, VectorEventArgs dragDeltaEventArgs)
         : base(dragablzItem)
     {
         DragDeltaEventArgs = dragDeltaEventArgs ?? throw new ArgumentNullException(nameof(dragDeltaEventArgs));
     }
 
-    public DragablzDragDeltaEventArgs(RoutedEvent routedEvent, DragablzItem dragablzItem, DragDeltaEventArgs dragDeltaEventArgs) 
+    public DragablzDragDeltaEventArgs(RoutedEvent routedEvent, DragablzItem dragablzItem, VectorEventArgs dragDeltaEventArgs) 
         : base(routedEvent, dragablzItem)
     {
         DragDeltaEventArgs = dragDeltaEventArgs ?? throw new ArgumentNullException(nameof(dragDeltaEventArgs));
     }
 
-    public DragablzDragDeltaEventArgs(RoutedEvent routedEvent, object source, DragablzItem dragablzItem, DragDeltaEventArgs dragDeltaEventArgs) 
+    public DragablzDragDeltaEventArgs(RoutedEvent routedEvent, IInteractive source, DragablzItem dragablzItem, VectorEventArgs dragDeltaEventArgs) 
         : base(routedEvent, source, dragablzItem)
     {
         DragDeltaEventArgs = dragDeltaEventArgs ?? throw new ArgumentNullException(nameof(dragDeltaEventArgs));
     }
 
-    public DragDeltaEventArgs DragDeltaEventArgs { get; }
+    public VectorEventArgs DragDeltaEventArgs { get; }
 
     public bool Cancel { get; set; }        
 }

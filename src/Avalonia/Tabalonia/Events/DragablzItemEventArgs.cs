@@ -18,8 +18,8 @@ public class DragablzItemEventArgs : RoutedEventArgs
         DragablzItem = dragablzItem;
     }
 
-    public DragablzItemEventArgs(RoutedEvent routedEvent, object source, DragablzItem dragablzItem)
-        : base(routedEvent, source)
+    public DragablzItemEventArgs(RoutedEvent routedEvent, IInteractive source, DragablzItem dragablzItem)
+        : base(routedEvent, source) 
     {
         DragablzItem = dragablzItem;
     }

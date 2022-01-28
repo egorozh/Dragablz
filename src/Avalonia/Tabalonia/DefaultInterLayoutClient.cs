@@ -23,22 +23,23 @@ public class DefaultInterLayoutClient : IInterLayoutClient
         {
             Partition = source.InterTabController.Partition
         };
+
         Clone(source.InterTabController, newInterTabController);
-        tabablzControl.SetCurrentValue(TabablzControl.InterTabControllerProperty, newInterTabController);            
+        tabablzControl.InterTabController= newInterTabController;            
 
         return new NewTabHost<IAvaloniaObject>(tabablzControl, tabablzControl);
     }
 
     private static void Clone(IAvaloniaObject from, IAvaloniaObject to)
     {
-        var localValueEnumerator = from.GetLocalValueEnumerator();
-        while (localValueEnumerator.MoveNext())
-        {
-            if (localValueEnumerator.Current.Property.ReadOnly ||
-                localValueEnumerator.Current.Value is FrameworkElement) continue;
+        //var localValueEnumerator = from.GetLocalValueEnumerator();
+        //while (localValueEnumerator.MoveNext())
+        //{
+        //    if (localValueEnumerator.Current.Property.ReadOnly ||
+        //        localValueEnumerator.Current.Value is FrameworkElement) continue;
                 
-            if (!(localValueEnumerator.Current.Value is BindingExpressionBase))
-                to.SetCurrentValue(localValueEnumerator.Current.Property, localValueEnumerator.Current.Value);                
-        }            
+        //    if (!(localValueEnumerator.Current.Value is BindingExpressionBase))
+        //        to.SetCurrentValue(localValueEnumerator.Current.Property, localValueEnumerator.Current.Value);                
+        //}            
     }
 }

@@ -6,7 +6,8 @@ namespace Tabalonia;
 /// <summary>
 /// Selects style to apply to a <see cref="DragablzItem"/> according to the tab item content itself.
 /// </summary>
-public class TabablzItemStyleSelector : StyleSelector
+public class TabablzItemStyleSelector 
+    //: StyleSelector
 {
     private readonly Style _defaultHeaderItemStyle;
     private readonly Style _customHeaderItemStyle;
@@ -17,10 +18,10 @@ public class TabablzItemStyleSelector : StyleSelector
         _customHeaderItemStyle = customHeaderItemStyle;
     }
 
-    public override Style SelectStyle(object item, DependencyObject container)
-    {
-        if (item is TabItem) return _defaultHeaderItemStyle;
+    //public override Style SelectStyle(object item, DependencyObject container)
+    //{
+    //    if (item is TabItem) return _defaultHeaderItemStyle;
 
-        return _customHeaderItemStyle;
-    }
+    //    return _customHeaderItemStyle;
+    //}
 }

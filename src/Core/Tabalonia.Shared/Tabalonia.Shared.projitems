@@ -23,7 +23,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)EmptyHeaderSizingHint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Events\OrderChangedEventArgs.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)HeaderedItemViewModel.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)IManualInterTabClient.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)AddLocationHint.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MoveItemRequest.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Referenceless\AnonymousDisposable.cs" />

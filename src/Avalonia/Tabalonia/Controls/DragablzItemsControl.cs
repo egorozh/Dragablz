@@ -1,45 +1,63 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Interactivity;
-using Avalonia.Threading;
+using Avalonia.Styling;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Tabalonia.Core;
 
 namespace Tabalonia;
 
 /// <summary>
 /// Items control which typically uses a canvas and 
 /// </summary>
-public class DragablzItemsControl : ItemsControl
+public class DragablzItemsControl : ItemsControl, IStyleable
 {        
     private object[] _previousSortQueryResult;
 
-    /*
-    static DragablzItemsControl()
+    #region IStyleable
+
+    Type IStyleable.StyleKey => typeof(DragablzItemsControl);
+
+    #endregion
+
+    #region Public Properties
+
+    public int FixedItemCount
     {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(DragablzItemsControl), new FrameworkPropertyMetadata(typeof(DragablzItemsControl)));            
-    }        
+        get;
+        set;
+        //get => (int)GetValue(FixedItemCountProperty);
+        //set => SetValue(FixedItemCountProperty, value);
+    }
+
+    #endregion
+    
 
     public DragablzItemsControl()
-    {            
-        ItemContainerGenerator.StatusChanged += ItemContainerGeneratorOnStatusChanged;
-        ItemContainerGenerator.ItemsChanged += ItemContainerGeneratorOnItemsChanged;
-        AddHandler(DragablzItem.XChangedEvent, new RoutedPropertyChangedEventHandler<double>(ItemXChanged));
-        AddHandler(DragablzItem.YChangedEvent, new RoutedPropertyChangedEventHandler<double>(ItemYChanged));
-        AddHandler(DragablzItem.DragDelta, new DragablzDragDeltaEventHandler(ItemDragDelta));
-        AddHandler(DragablzItem.DragCompleted, new DragablzDragCompletedEventHandler(ItemDragCompleted));
-        AddHandler(DragablzItem.DragStarted, new DragablzDragStartedEventHandler(ItemDragStarted));
-        AddHandler(DragablzItem.MouseDownWithinEvent, new DragablzItemEventHandler(ItemMouseDownWithinHandlerTarget));                        
+    {
+        //ItemContainerGenerator.StatusChanged += ItemContainerGeneratorOnStatusChanged;
+        //ItemContainerGenerator.ItemsChanged += ItemContainerGeneratorOnItemsChanged;
+        //AddHandler(DragablzItem.XChangedEvent, new RoutedPropertyChangedEventHandler<double>(ItemXChanged));
+        //AddHandler(DragablzItem.YChangedEvent, new RoutedPropertyChangedEventHandler<double>(ItemYChanged));
+        //AddHandler(DragablzItem.DragDelta, new DragablzDragDeltaEventHandler(ItemDragDelta));
+        //AddHandler(DragablzItem.DragCompleted, new DragablzDragCompletedEventHandler(ItemDragCompleted));
+        //AddHandler(DragablzItem.DragStarted, new DragablzDragStartedEventHandler(ItemDragStarted));
+        //AddHandler(DragablzItem.MouseDownWithinEvent, new DragablzItemEventHandler(ItemMouseDownWithinHandlerTarget));
     }
+
+    #region Internal Methods
+
+    internal IEnumerable<DragablzItem> DragablzItems() => this.Containers<DragablzItem>().ToList();
+
+    #endregion
+    /*
+    
+   
 
     public static readonly DependencyProperty FixedItemCountProperty = DependencyProperty.Register(
         "FixedItemCount", typeof (int), typeof (DragablzItemsControl), new PropertyMetadata(default(int)));
 
-    public int FixedItemCount
-    {
-        get => (int) GetValue(FixedItemCountProperty);
-        set => SetValue(FixedItemCountProperty, value);
-    }
+    
 
     private void ItemContainerGeneratorOnItemsChanged(object sender, ItemsChangedEventArgs itemsChangedEventArgs)
     {
@@ -257,10 +275,7 @@ public class DragablzItemsControl : ItemsControl
         ItemsOrganiser.Organise(this, new Size(ItemsPresenterWidth, ItemsPresenterHeight), orderedEnumerable);
     }        
 
-    internal IEnumerable<DragablzItem> DragablzItems()
-    {
-        return this.Containers<DragablzItem>().ToList();            
-    }
+   
 
     internal Size? LockedMeasure { get; set; }
 

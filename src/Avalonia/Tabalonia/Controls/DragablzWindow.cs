@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.Reactive.Disposables;
 using System.Reflection;
+using Avalonia.Styling;
 
 namespace Tabalonia;
 
@@ -18,25 +19,18 @@ namespace Tabalonia;
 //[TemplatePart(Name = WindowSurfaceGridPartName, Type = typeof(Grid))]
 //[TemplatePart(Name = WindowRestoreThumbPartName, Type = typeof(Thumb))]
 //[TemplatePart(Name = WindowResizeThumbPartName, Type = typeof(Thumb))]
-public class DragablzWindow : Window
+public class DragablzWindow : Window, IStyleable
 {
     public const string WindowSurfaceGridPartName = "PART_WindowSurface";
     public const string WindowRestoreThumbPartName = "PART_WindowRestoreThumb";
     public const string WindowResizeThumbPartName = "PART_WindowResizeThumb";
     private readonly SerialDisposable _templateSubscription = new SerialDisposable();
 
-    /*
-    public static RoutedCommand CloseWindowCommand = new RoutedCommand();
-    public static RoutedCommand RestoreWindowCommand = new RoutedCommand();
-    public static RoutedCommand MaximizeWindowCommand = new RoutedCommand();
-    public static RoutedCommand MinimizeWindowCommand = new RoutedCommand();        
-
     private const int ResizeMargin = 4;
     private Size _sizeWhenResizeBegan;
     private Point _screenMousePointWhenResizeBegan;
     private Point _windowLocationPointWhenResizeBegan;
     private SizeGrip _resizeType;
-
     private static SizeGrip[] _leftMode = new[] { SizeGrip.TopLeft, SizeGrip.Left, SizeGrip.BottomLeft };
     private static SizeGrip[] _rightMode = new[] { SizeGrip.TopRight, SizeGrip.Right, SizeGrip.BottomRight };
     private static SizeGrip[] _topMode = new[] { SizeGrip.TopLeft, SizeGrip.Top, SizeGrip.TopRight };
@@ -46,20 +40,35 @@ public class DragablzWindow : Window
     private static double _yScale = 1;
     private static bool _dpiInitialized = false;
 
-    static DragablzWindow()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(DragablzWindow), new FrameworkPropertyMetadata(typeof(DragablzWindow)));            
-    }
+    #region IStyleable
+
+    Type IStyleable.StyleKey => typeof(DragablzWindow);
+
+    #endregion
 
     public DragablzWindow()
     {
-        AddHandler(DragablzItem.DragStarted, new DragablzDragStartedEventHandler(ItemDragStarted), true);
-        AddHandler(DragablzItem.DragCompleted, new DragablzDragCompletedEventHandler(ItemDragCompleted), true);
-        CommandBindings.Add(new CommandBinding(CloseWindowCommand, CloseWindowExecuted));
-        CommandBindings.Add(new CommandBinding(MaximizeWindowCommand, MaximizeWindowExecuted));
-        CommandBindings.Add(new CommandBinding(MinimizeWindowCommand, MinimizeWindowExecuted));
-        CommandBindings.Add(new CommandBinding(RestoreWindowCommand, RestoreWindowExecuted));                        
+        //AddHandler(DragablzItem.DragStarted, new DragablzDragStartedEventHandler(ItemDragStarted), true);
+        //AddHandler(DragablzItem.DragCompleted, new DragablzDragCompletedEventHandler(ItemDragCompleted), true);
+        //CommandBindings.Add(new CommandBinding(CloseWindowCommand, CloseWindowExecuted));
+        //CommandBindings.Add(new CommandBinding(MaximizeWindowCommand, MaximizeWindowExecuted));
+        //CommandBindings.Add(new CommandBinding(MinimizeWindowCommand, MinimizeWindowExecuted));
+        //CommandBindings.Add(new CommandBinding(RestoreWindowCommand, RestoreWindowExecuted));
     }
+
+
+    /*
+    public static RoutedCommand CloseWindowCommand = new RoutedCommand();
+    public static RoutedCommand RestoreWindowCommand = new RoutedCommand();
+    public static RoutedCommand MaximizeWindowCommand = new RoutedCommand();
+    public static RoutedCommand MinimizeWindowCommand = new RoutedCommand();        
+
+  
+
+  
+       
+
+    
 
     private static readonly DependencyPropertyKey IsWindowBeingDraggedByTabPropertyKey =
         DependencyProperty.RegisterReadOnly(
