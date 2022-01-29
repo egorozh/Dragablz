@@ -30,5 +30,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)Referenceless\Disposable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Referenceless\ICancelable.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Referenceless\SerialDisposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TabEmptiedResponse.cs" />
   </ItemGroup>
 </Project>

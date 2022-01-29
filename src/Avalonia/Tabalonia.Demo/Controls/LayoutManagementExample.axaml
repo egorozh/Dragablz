@@ -25,7 +25,7 @@
 			<RowDefinition Height="Auto" />
 		</Grid.RowDefinitions>
 		<Button Command="{Binding QueryLayoutsCommand}">Query Layouts</Button>
-		<TreeView Grid.Row="1" ItemsSource="{Binding RootNodes}" x:Name="TreeView">
+		<!--<TreeView Grid.Row="1" ItemsSource="{Binding RootNodes}" x:Name="TreeView">
 			<TreeView.Resources>
 				<DataTemplate DataType="{x:Type dragablzDemo:TabablzControlProxy}">
 					<TextBlock>TabablzControl</TextBlock>
@@ -42,7 +42,7 @@
 					<ContentControl Content="{Binding Content}" />
 				</HierarchicalDataTemplate>
 			</TreeView.ItemTemplate>
-		</TreeView>
+		</TreeView>-->
 		<ContentControl Grid.Row="2" Content="{Binding ElementName=TreeView, Path=SelectedItem.Content}" />
 	</Grid>
 </UserControl>

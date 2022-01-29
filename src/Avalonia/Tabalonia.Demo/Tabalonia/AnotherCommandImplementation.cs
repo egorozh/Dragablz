@@ -31,14 +31,14 @@ public class AnotherCommandImplementation : ICommand
         _execute(parameter);
     }
 
-    public event EventHandler CanExecuteChanged
-    {
-        add => CommandManager.RequerySuggested += value;
-        remove => CommandManager.RequerySuggested -= value;
-    }
+    public event EventHandler CanExecuteChanged;
+    //{
+        //add => CommandManager.RequerySuggested += value;
+        //remove => CommandManager.RequerySuggested -= value;
+    //}
 
     public void Refresh()
     {
-        CommandManager.InvalidateRequerySuggested();
+        //CommandManager.InvalidateRequerySuggested();
     }
 }

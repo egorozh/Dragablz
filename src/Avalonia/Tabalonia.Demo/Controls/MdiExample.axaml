@@ -8,12 +8,12 @@
              x:Class="Tabalonia.Demo.MdiExample">
 	<DockPanel>
 		<StackPanel DockPanel.Dock="Top" Orientation="Horizontal">
-			<Button Command="{x:Static dockablz:Layout.TileFloatingItemsCommand}"
+			<!--<Button Command="{x:Static dockablz:Layout.TileFloatingItemsCommand}"
                     CommandTarget="{Binding ElementName=MdiLayout}">Tile Grid</Button>
 			<Button Command="{x:Static dockablz:Layout.TileFloatingItemsVerticallyCommand}"
                     CommandTarget="{Binding ElementName=MdiLayout}">Tile Horizontal</Button>
 			<Button Command="{x:Static dockablz:Layout.TileFloatingItemsHorizontallyCommand}"
-                    CommandTarget="{Binding ElementName=MdiLayout}">Tile Vertical</Button>
+                    CommandTarget="{Binding ElementName=MdiLayout}">Tile Vertical</Button>-->
 		</StackPanel>
 
 		<dockablz:Layout x:Name="MdiLayout"

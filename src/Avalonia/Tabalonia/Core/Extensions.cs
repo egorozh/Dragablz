@@ -4,6 +4,8 @@ using System.Linq;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.LogicalTree;
+using Avalonia.VisualTree;
 
 namespace Tabalonia.Core;
 
@@ -46,19 +48,20 @@ internal static class Extensions
         //    yield return child;
     }
 
-    public static IEnumerable<object> VisualTreeDepthFirstTraversal(this IAvaloniaObject? node)
+    public static IEnumerable<object> VisualTreeDepthFirstTraversal(this IVisual? node)
     {
-        if (node == null) yield break;
+        if (node == null) 
+            yield break;
+
         yield return node;
 
-        //for (var i = 0; i < VisualTreeHelper.GetChildrenCount(node); i++)
-        //{
-            //var child = VisualTreeHelper.GetChild(node, i);
-            //foreach (var d in child.VisualTreeDepthFirstTraversal())
-            //{
-            //    yield return d;
-            //}
-        //}
+        foreach (var child in node.VisualChildren)
+        {
+            foreach (var d in child.VisualTreeDepthFirstTraversal())
+            {
+                yield return d;
+            }
+        }
     }
 
     /// <summary>
@@ -66,14 +69,15 @@ internal static class Extensions
     /// </summary>
     /// <param name="dependencyObject"></param>
     /// <returns></returns>
-    public static IEnumerable<IAvaloniaObject> VisualTreeAncestory(this IAvaloniaObject dependencyObject)
+    public static IEnumerable<IVisual> VisualTreeAncestory(this IVisual? dependencyObject)
     {
-        if (dependencyObject == null) throw new ArgumentNullException(nameof(dependencyObject));
+        if (dependencyObject == null) 
+            throw new ArgumentNullException(nameof(dependencyObject));
 
         while (dependencyObject != null)
         {
             yield return dependencyObject;
-            //dependencyObject = VisualTreeHelper.GetParent(dependencyObject);
+            dependencyObject = dependencyObject.GetVisualParent();
         }
     }
 
@@ -82,14 +86,16 @@ internal static class Extensions
     /// </summary>
     /// <param name="dependencyObject"></param>
     /// <returns></returns>
-    public static IEnumerable<IAvaloniaObject> LogicalTreeAncestory(this IAvaloniaObject dependencyObject)
+    public static IEnumerable<ILogical?> LogicalTreeAncestory(this ILogical? dependencyObject)
     {
-        if (dependencyObject == null) throw new ArgumentNullException(nameof(dependencyObject));
+        if (dependencyObject == null)
+            throw new ArgumentNullException(nameof(dependencyObject));
 
         while (dependencyObject != null)
         {
             yield return dependencyObject;
-            //dependencyObject = LogicalTreeHelper.GetParent(dependencyObject);
+
+            dependencyObject = dependencyObject.LogicalParent;
         }
     }
 

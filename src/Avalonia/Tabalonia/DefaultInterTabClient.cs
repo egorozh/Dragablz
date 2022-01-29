@@ -1,8 +1,5 @@
-using System;
-using System.Linq;
 using Avalonia.Controls;
-using Avalonia.Threading;
-using Tabalonia.Core;
+using System;
 
 namespace Tabalonia;
 
@@ -11,6 +8,8 @@ public class DefaultInterTabClient : IInterTabClient
     public virtual INewTabHost<Window> GetNewHost(IInterTabClient interTabClient, object partition, TabablzControl source)
     {
         if (source == null) throw new ArgumentNullException(nameof(source));
+
+        
         //var sourceWindow = Window.GetWindow(source);
         //if (sourceWindow == null) throw new ApplicationException("Unable to ascertain source window.");
         //var newWindow = (Window)Activator.CreateInstance(sourceWindow.GetType());

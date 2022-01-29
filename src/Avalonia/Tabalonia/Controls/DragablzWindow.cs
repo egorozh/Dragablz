@@ -1,13 +1,8 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
-using Avalonia.Controls.Primitives;
-using Avalonia.Input;
-using Avalonia.Media;
-using System;
-using System.Linq;
-using System.Reactive.Disposables;
-using System.Reflection;
 using Avalonia.Styling;
+using System;
+using System.Reactive.Disposables;
 
 namespace Tabalonia;
 
@@ -24,17 +19,17 @@ public class DragablzWindow : Window, IStyleable
     public const string WindowSurfaceGridPartName = "PART_WindowSurface";
     public const string WindowRestoreThumbPartName = "PART_WindowRestoreThumb";
     public const string WindowResizeThumbPartName = "PART_WindowResizeThumb";
-    private readonly SerialDisposable _templateSubscription = new SerialDisposable();
+    private readonly SerialDisposable _templateSubscription = new();
 
     private const int ResizeMargin = 4;
     private Size _sizeWhenResizeBegan;
     private Point _screenMousePointWhenResizeBegan;
     private Point _windowLocationPointWhenResizeBegan;
     private SizeGrip _resizeType;
-    private static SizeGrip[] _leftMode = new[] { SizeGrip.TopLeft, SizeGrip.Left, SizeGrip.BottomLeft };
-    private static SizeGrip[] _rightMode = new[] { SizeGrip.TopRight, SizeGrip.Right, SizeGrip.BottomRight };
-    private static SizeGrip[] _topMode = new[] { SizeGrip.TopLeft, SizeGrip.Top, SizeGrip.TopRight };
-    private static SizeGrip[] _bottomMode = new[] { SizeGrip.BottomLeft, SizeGrip.Bottom, SizeGrip.BottomRight };
+    private static SizeGrip[] _leftMode = { SizeGrip.TopLeft, SizeGrip.Left, SizeGrip.BottomLeft };
+    private static SizeGrip[] _rightMode = { SizeGrip.TopRight, SizeGrip.Right, SizeGrip.BottomRight };
+    private static SizeGrip[] _topMode = { SizeGrip.TopLeft, SizeGrip.Top, SizeGrip.TopRight };
+    private static SizeGrip[] _bottomMode = { SizeGrip.BottomLeft, SizeGrip.Bottom, SizeGrip.BottomRight };
 
     private static double _xScale = 1;
     private static double _yScale = 1;

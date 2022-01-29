@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Avalonia;
+using Avalonia.VisualTree;
 using Dragablz.Dockablz;
 using Tabalonia.Core;
 
@@ -23,7 +24,7 @@ public class BranchAccessor
             SecondItemTabablzControl = FindTabablzControl(branch.SecondItem, branch.SecondContentPresenter);
     }
 
-    private static TabablzControl? FindTabablzControl(object item, IAvaloniaObject contentPresenter)
+    private static TabablzControl? FindTabablzControl(object item, IVisual contentPresenter)
     {
         var result = item as TabablzControl;
         return result ?? contentPresenter.VisualTreeDepthFirstTraversal().OfType<TabablzControl>().FirstOrDefault();

@@ -47,7 +47,7 @@ public static class DragablzColors
         return new SolidColorBrush(Color.FromArgb(c.A, c.R, c.G, c.B));
     }
 
-    private static Color ToColor(UInt32 value)
+    private static Color ToColor(uint value)
     {
         return Color.FromArgb(255,
             (byte) (value >> 16),

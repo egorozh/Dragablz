@@ -1,18 +1,11 @@
-﻿using System;
+﻿using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Layout;
+using Dragablz.Dockablz;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Avalonia;
-using Avalonia.Controls;
-using Avalonia.Controls.Presenters;
-using Avalonia.Data;
-using Avalonia.Layout;
-using Avalonia.Markup.Xaml.Templates;
-using Avalonia.Styling;
-using Avalonia.Threading;
-using Dragablz.Core;
-using Dragablz.Dockablz;
-using Tabalonia.Core;
 
 namespace Tabalonia.Dockablz;
 
@@ -57,6 +50,83 @@ public class Layout : ContentControl
 
     #endregion
 
+    #region Public Properties
+
+    /// <summary>
+    /// Use in conjuction with the <see cref="InterTabController.Partition"/> on a <see cref="TabablzControl"/>
+    /// to isolate drag and drop spaces/control instances.
+    /// </summary>
+    public string Partition { get; set; }
+
+    /// <summary>
+    /// Floating items, such as tool/MDI windows, which will sit above the <see cref="Content"/>.
+    /// </summary>
+    public IEnumerable FloatingItems => _floatingItems.Items;
+
+    public string FloatingItemHeaderMemberPath
+    {
+        get;
+        set;
+        //get => (string)GetValue(FloatingItemHeaderMemberPathProperty);
+        //set => SetValue(FloatingItemHeaderMemberPathProperty, value);
+    }
+    public string FloatingItemDisplayMemberPath
+    {
+        get;
+        set;
+        //get => (string)GetValue(FloatingItemDisplayMemberPathProperty);
+        //set => SetValue(FloatingItemDisplayMemberPathProperty, value);
+    }
+
+    #endregion
+
+    #region Constructor
+
+    public Layout()
+    {
+        //Loaded += (sender, args) =>
+        //{
+        //    LoadedLayouts.Add(this);
+        //    MarkTopLeftItem(this);
+        //};
+        //Unloaded += (sender, args) => LoadedLayouts.Remove(this);
+
+        //CommandBindings.Add(new CommandBinding(UnfloatItemCommand, UnfloatExecuted, CanExecuteUnfloat));
+        //CommandBindings.Add(new CommandBinding(MaximiseFloatingItem, MaximiseFloatingItemExecuted, CanExecuteMaximiseFloatingItem));
+        //CommandBindings.Add(new CommandBinding(CloseFloatingItem, CloseFloatingItemExecuted, CanExecuteCloseFloatingItem));
+        //CommandBindings.Add(new CommandBinding(RestoreFloatingItem, RestoreFloatingItemExecuted, CanExecuteRestoreFloatingItem));
+        //CommandBindings.Add(new CommandBinding(TileFloatingItemsCommand, TileFloatingItemsExecuted));
+        //CommandBindings.Add(new CommandBinding(TileFloatingItemsCommand, TileFloatingItemsExecuted));
+        //CommandBindings.Add(new CommandBinding(TileFloatingItemsVerticallyCommand, TileFloatingItemsVerticallyExecuted));
+        //CommandBindings.Add(new CommandBinding(TileFloatingItemsHorizontallyCommand, TileFloatingItemsHorizontallyExecuted));
+
+        //TODO bad bad behaviour.  Pick up this from the template.
+        _floatingItems = new DragablzItemsControl
+        {
+            //ContainerCustomisations = new ContainerCustomisations(
+            //    GetFloatingContainerForItemOverride,
+            //    PrepareFloatingContainerForItemOverride,
+            //    ClearingFloatingContainerForItemOverride)
+        };
+
+    //    var floatingItemsSourceBinding = new Binding("FloatingItemsSource") { Source = this };
+    //    _floatingItems.SetBinding(ItemsControl.ItemsSourceProperty, floatingItemsSourceBinding);
+    //    var floatingItemsControlStyleBinding = new Binding("FloatingItemsControlStyle") { Source = this };
+    //    _floatingItems.SetBinding(StyleProperty, floatingItemsControlStyleBinding);
+    //    var floatingItemTemplateBinding = new Binding("FloatingItemTemplate") { Source = this };
+    //    _floatingItems.SetBinding(ItemsControl.ItemTemplateProperty, floatingItemTemplateBinding);
+    //    var floatingItemTemplateSelectorBinding = new Binding("FloatingItemTemplateSelector") { Source = this };
+    //    _floatingItems.SetBinding(ItemsControl.ItemTemplateSelectorProperty, floatingItemTemplateSelectorBinding);
+    //    var floatingItemContainerStyeBinding = new Binding("FloatingItemContainerStyle") { Source = this };
+    //    _floatingItems.SetBinding(ItemsControl.ItemContainerStyleProperty, floatingItemContainerStyeBinding);
+    //    var floatingItemContainerStyleSelectorBinding = new Binding("FloatingItemContainerStyleSelector") { Source = this };
+    //    _floatingItems.SetBinding(ItemsControl.ItemContainerStyleSelectorProperty, floatingItemContainerStyleSelectorBinding);
+    }
+
+
+    #endregion
+
+
     #region Public Static Methods
 
     /// <summary>
@@ -64,6 +134,90 @@ public class Layout : ContentControl
     /// </summary>
     /// <returns></returns>
     public static IEnumerable<Layout> GetLoadedInstances() => LoadedLayouts.ToList();
+
+    /// <summary>
+    /// Creates a split in a layout, at the location of a specified <see cref="TabablzControl"/>.
+    /// </summary>
+    /// <para></para>
+    /// <param name="tabablzControl">Tab control to be split.</param>
+    /// <param name="orientation">Direction of split.</param>
+    /// <param name="makeSecond">Set to <c>true</c> to make the current tab control push into the right hand or bottom of the split.</param>
+    /// <remarks>The tab control to be split must be hosted in a layout control.</remarks>
+    public static BranchResult Branch(TabablzControl tabablzControl, Orientation orientation, bool makeSecond) 
+        => Branch(tabablzControl, orientation, makeSecond, .5);
+
+    /// <summary>
+    /// Creates a split in a layout, at the location of a specified <see cref="TabablzControl"/>.
+    /// </summary>
+    /// <para></para>
+    /// <param name="tabablzControl">Tab control to be split.</param>
+    /// <param name="orientation">Direction of split.</param>
+    /// <param name="makeSecond">Set to <c>true</c> to make the current tab control push into the right hand or bottom of the split.</param>
+    /// <param name="firstItemProportion">Sets the proportion of the first tab control, with 0.5 being 50% of available space.</param>
+    /// <remarks>The tab control to be split must be hosted in a layout control.  <see cref="Layout.BranchTemplate" /> should be set (typically via XAML).</remarks>
+    public static BranchResult Branch(TabablzControl tabablzControl, Orientation orientation, bool makeSecond, double firstItemProportion) 
+        => Branch(tabablzControl, null, orientation, makeSecond, firstItemProportion);
+
+    /// <summary>
+    /// Creates a split in a layout, at the location of a specified <see cref="TabablzControl"/>.
+    /// </summary>
+    /// <para></para>
+    /// <param name="tabablzControl">Tab control to be split.</param>
+    /// <param name="newSiblingTabablzControl">New sibling tab control (otherwise <see cref="Layout.BranchTemplate"/> will be used).</param>
+    /// <param name="orientation">Direction of split.</param>
+    /// <param name="makeCurrentSecond">Set to <c>true</c> to make the current tab control push into the right hand or bottom of the split.</param>
+    /// <param name="firstItemProportion">Sets the proportion of the first tab control, with 0.5 being 50% of available space.</param>
+    /// <remarks>The tab control to be split must be hosted in a layout control. </remarks>
+    public static BranchResult Branch(TabablzControl tabablzControl, TabablzControl newSiblingTabablzControl, Orientation orientation, bool makeCurrentSecond,
+        double firstItemProportion)
+    {
+        if (firstItemProportion < 0.0 || firstItemProportion > 1.0) throw new ArgumentOutOfRangeException(nameof(firstItemProportion), "Must be >= 0.0 and <= 1.0");
+
+        //var locationReport = Find(tabablzControl);
+
+        //Action<Branch> applier;
+        //object existingContent;
+        //if (!locationReport.IsLeaf)
+        //{
+        //    existingContent = locationReport.RootLayout.Content;
+        //    applier = branch => locationReport.RootLayout.Content = branch;
+        //}
+        //else if (!locationReport.IsSecondLeaf)
+        //{
+        //    existingContent = locationReport.ParentBranch.FirstItem;
+        //    applier = branch => locationReport.ParentBranch.FirstItem = branch;
+        //}
+        //else
+        //{
+        //    existingContent = locationReport.ParentBranch.SecondItem;
+        //    applier = branch => locationReport.ParentBranch.SecondItem = branch;
+        //}
+
+        //var selectedItem = tabablzControl.SelectedItem;
+        //var branchResult = Branch(orientation, firstItemProportion, makeCurrentSecond, locationReport.RootLayout.BranchTemplate, newSiblingTabablzControl, existingContent, applier);
+        //tabablzControl.SelectedItem = selectedItem;
+        //tabablzControl.Dispatcher.BeginInvoke(new Action(() =>
+        //{
+        //    tabablzControl.SetCurrentValue(Selector.SelectedItemProperty, selectedItem);
+        //    MarkTopLeftItem(locationReport.RootLayout);
+        //}),
+        //    DispatcherPriority.Loaded);
+
+        //return branchResult;
+        return new BranchResult(null,null);
+    }
+
+    /// <summary>
+    /// Finds the location of a tab control withing a layout.
+    /// </summary>
+    /// <param name="tabablzControl"></param>
+    /// <returns></returns>
+    public static LocationReport Find(TabablzControl tabablzControl)
+    {
+        if (tabablzControl == null) throw new ArgumentNullException(nameof(tabablzControl));
+
+        return Finder.Find(tabablzControl);
+    }
 
     #endregion
 
@@ -94,141 +248,14 @@ public class Layout : ContentControl
         EventManager.RegisterClassHandler(typeof(DragablzItem), DragablzItem.DragCompleted, new DragablzDragCompletedEventHandler(ItemDragCompleted));            
     }        
 
-    public Layout()
-    {
-        Loaded += (sender, args) =>
-        {
-            LoadedLayouts.Add(this);
-            MarkTopLeftItem(this);
-        };
-        Unloaded += (sender, args) => LoadedLayouts.Remove(this);            
+    
+       
 
-        CommandBindings.Add(new CommandBinding(UnfloatItemCommand, UnfloatExecuted, CanExecuteUnfloat));
-        CommandBindings.Add(new CommandBinding(MaximiseFloatingItem, MaximiseFloatingItemExecuted, CanExecuteMaximiseFloatingItem));
-        CommandBindings.Add(new CommandBinding(CloseFloatingItem, CloseFloatingItemExecuted, CanExecuteCloseFloatingItem));
-        CommandBindings.Add(new CommandBinding(RestoreFloatingItem, RestoreFloatingItemExecuted, CanExecuteRestoreFloatingItem));
-        CommandBindings.Add(new CommandBinding(TileFloatingItemsCommand, TileFloatingItemsExecuted));
-        CommandBindings.Add(new CommandBinding(TileFloatingItemsCommand, TileFloatingItemsExecuted));
-        CommandBindings.Add(new CommandBinding(TileFloatingItemsVerticallyCommand, TileFloatingItemsVerticallyExecuted));
-        CommandBindings.Add(new CommandBinding(TileFloatingItemsHorizontallyCommand, TileFloatingItemsHorizontallyExecuted));                        
-
-        //TODO bad bad behaviour.  Pick up this from the template.
-        _floatingItems = new DragablzItemsControl
-        {
-            ContainerCustomisations = new ContainerCustomisations(
-                GetFloatingContainerForItemOverride,
-                PrepareFloatingContainerForItemOverride,
-                ClearingFloatingContainerForItemOverride)
-        };
-
-        var floatingItemsSourceBinding = new Binding("FloatingItemsSource") { Source = this };
-        _floatingItems.SetBinding(ItemsControl.ItemsSourceProperty, floatingItemsSourceBinding);
-        var floatingItemsControlStyleBinding = new Binding("FloatingItemsControlStyle") { Source = this };
-        _floatingItems.SetBinding(StyleProperty, floatingItemsControlStyleBinding);
-        var floatingItemTemplateBinding = new Binding("FloatingItemTemplate") { Source = this };
-        _floatingItems.SetBinding(ItemsControl.ItemTemplateProperty, floatingItemTemplateBinding);
-        var floatingItemTemplateSelectorBinding = new Binding("FloatingItemTemplateSelector") { Source = this };
-        _floatingItems.SetBinding(ItemsControl.ItemTemplateSelectorProperty, floatingItemTemplateSelectorBinding);            
-        var floatingItemContainerStyeBinding = new Binding("FloatingItemContainerStyle") { Source = this };
-        _floatingItems.SetBinding(ItemsControl.ItemContainerStyleProperty, floatingItemContainerStyeBinding);
-        var floatingItemContainerStyleSelectorBinding = new Binding("FloatingItemContainerStyleSelector") { Source = this };
-        _floatingItems.SetBinding(ItemsControl.ItemContainerStyleSelectorProperty, floatingItemContainerStyleSelectorBinding);
-    }
+    
 
        
 
-    /// <summary>
-    /// Finds the location of a tab control withing a layout.
-    /// </summary>
-    /// <param name="tabablzControl"></param>
-    /// <returns></returns>
-    public static LocationReport Find(TabablzControl tabablzControl)
-    {
-        if (tabablzControl == null) throw new ArgumentNullException(nameof(tabablzControl));
-
-        return Finder.Find(tabablzControl);            
-    }
-
-    /// <summary>
-    /// Creates a split in a layout, at the location of a specified <see cref="TabablzControl"/>.
-    /// </summary>
-    /// <para></para>
-    /// <param name="tabablzControl">Tab control to be split.</param>
-    /// <param name="orientation">Direction of split.</param>
-    /// <param name="makeSecond">Set to <c>true</c> to make the current tab control push into the right hand or bottom of the split.</param>
-    /// <remarks>The tab control to be split must be hosted in a layout control.</remarks>
-    public static BranchResult Branch(TabablzControl tabablzControl, Orientation orientation, bool makeSecond)
-    {
-        return Branch(tabablzControl, orientation, makeSecond, .5);
-    }
-
-    /// <summary>
-    /// Creates a split in a layout, at the location of a specified <see cref="TabablzControl"/>.
-    /// </summary>
-    /// <para></para>
-    /// <param name="tabablzControl">Tab control to be split.</param>
-    /// <param name="orientation">Direction of split.</param>
-    /// <param name="makeSecond">Set to <c>true</c> to make the current tab control push into the right hand or bottom of the split.</param>
-    /// <param name="firstItemProportion">Sets the proportion of the first tab control, with 0.5 being 50% of available space.</param>
-    /// <remarks>The tab control to be split must be hosted in a layout control.  <see cref="Layout.BranchTemplate" /> should be set (typically via XAML).</remarks>
-    public static BranchResult Branch(TabablzControl tabablzControl, Orientation orientation, bool makeSecond, double firstItemProportion)
-    {
-        return Branch(tabablzControl, null, orientation, makeSecond, firstItemProportion);
-    }
-
-    /// <summary>
-    /// Creates a split in a layout, at the location of a specified <see cref="TabablzControl"/>.
-    /// </summary>
-    /// <para></para>
-    /// <param name="tabablzControl">Tab control to be split.</param>
-    /// <param name="newSiblingTabablzControl">New sibling tab control (otherwise <see cref="Layout.BranchTemplate"/> will be used).</param>
-    /// <param name="orientation">Direction of split.</param>
-    /// <param name="makeCurrentSecond">Set to <c>true</c> to make the current tab control push into the right hand or bottom of the split.</param>
-    /// <param name="firstItemProportion">Sets the proportion of the first tab control, with 0.5 being 50% of available space.</param>
-    /// <remarks>The tab control to be split must be hosted in a layout control. </remarks>
-    public static BranchResult Branch(TabablzControl tabablzControl, TabablzControl newSiblingTabablzControl, Orientation orientation, bool makeCurrentSecond,
-        double firstItemProportion)
-    {
-        if (firstItemProportion < 0.0 || firstItemProportion > 1.0) throw new ArgumentOutOfRangeException(nameof(firstItemProportion), "Must be >= 0.0 and <= 1.0");
-
-        var locationReport = Find(tabablzControl);
-
-        Action<Branch> applier;
-        object existingContent;
-        if (!locationReport.IsLeaf)
-        {
-            existingContent = locationReport.RootLayout.Content;
-            applier = branch => locationReport.RootLayout.Content = branch;
-        }
-        else if (!locationReport.IsSecondLeaf)
-        {
-            existingContent = locationReport.ParentBranch.FirstItem;
-            applier = branch => locationReport.ParentBranch.FirstItem = branch;
-        }
-        else
-        {
-            existingContent = locationReport.ParentBranch.SecondItem;
-            applier = branch => locationReport.ParentBranch.SecondItem = branch;
-        }
-
-        var selectedItem = tabablzControl.SelectedItem;
-        var branchResult = Branch(orientation, firstItemProportion, makeCurrentSecond, locationReport.RootLayout.BranchTemplate, newSiblingTabablzControl, existingContent, applier);
-        tabablzControl.SelectedItem = selectedItem;
-        tabablzControl.Dispatcher.BeginInvoke(new Action(() =>
-            {
-                tabablzControl.SetCurrentValue(Selector.SelectedItemProperty, selectedItem);
-                MarkTopLeftItem(locationReport.RootLayout);
-            }),
-            DispatcherPriority.Loaded);
-
-        return branchResult;
-    }        
-
-    /// <summary>
-    /// Use in conjuction with the <see cref="InterTabController.Partition"/> on a <see cref="TabablzControl"/>
-    /// to isolate drag and drop spaces/control instances.
-    /// </summary>
-    public string Partition { get; set; }
+    
 
     public static readonly DependencyProperty InterLayoutClientProperty = DependencyProperty.Register(
         "InterLayoutClient", typeof (IInterLayoutClient), typeof (Layout), new PropertyMetadata(new DefaultInterLayoutClient()));
@@ -297,10 +324,7 @@ public class Layout : ContentControl
         set => SetValue(FloatingItemsContainerMarginProperty, value);
     }
 
-    /// <summary>
-    /// Floating items, such as tool/MDI windows, which will sit above the <see cref="Content"/>.
-    /// </summary>
-    public ItemCollection FloatingItems => _floatingItems.Items;
+   
 
     public static readonly DependencyProperty FloatingItemsSourceProperty = DependencyProperty.Register(
         "FloatingItemsSource", typeof (IEnumerable), typeof (Layout), new PropertyMetadata(default(IEnumerable)));
@@ -366,21 +390,12 @@ public class Layout : ContentControl
     public static readonly DependencyProperty FloatingItemHeaderMemberPathProperty = DependencyProperty.Register(
         "FloatingItemHeaderMemberPath", typeof (string), typeof (Layout), new PropertyMetadata(default(string)));
 
-    public string FloatingItemHeaderMemberPath
-    {
-        get => (string) GetValue(FloatingItemHeaderMemberPathProperty);
-        set => SetValue(FloatingItemHeaderMemberPathProperty, value);
-    }
+   
 
     public static readonly DependencyProperty FloatingItemDisplayMemberPathProperty = DependencyProperty.Register(
         "FloatingItemDisplayMemberPath", typeof (string), typeof (Layout), new PropertyMetadata(default(string)));
 
-    public string FloatingItemDisplayMemberPath
-    {
-        get => (string) GetValue(FloatingItemDisplayMemberPathProperty);
-        set => SetValue(FloatingItemDisplayMemberPathProperty, value);
-    }
-
+    
     public static readonly DependencyProperty ClosingFloatingItemCallbackProperty = DependencyProperty.Register(
         "ClosingFloatingItemCallback", typeof (ClosingFloatingItemCallback), typeof (Layout), new PropertyMetadata(default(ClosingFloatingItemCallback)));
 

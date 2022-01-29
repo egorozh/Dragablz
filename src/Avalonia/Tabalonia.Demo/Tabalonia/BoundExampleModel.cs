@@ -2,6 +2,7 @@
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using Dragablz;
+using Tabalonia.Dockablz;
 
 namespace Tabalonia.Demo;
 

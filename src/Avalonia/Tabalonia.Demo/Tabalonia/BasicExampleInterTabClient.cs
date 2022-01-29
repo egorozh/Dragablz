@@ -9,7 +9,8 @@ public class BasicExampleInterTabClient : IInterTabClient
         var view = new BasicExampleTemplateWindow();
         var model = new BasicExampleTemplateModel(interTabClient, partition);
         view.DataContext = model;
-        return new NewTabHost<Window>(view, view.TabablzControl);
+        //return new NewTabHost<Window>(view, view.TabablzControl);
+        return new NewTabHost<Window>(view, null);
     }
 
     public TabEmptiedResponse TabEmptiedHandler(TabablzControl tabControl, Window window)

@@ -44,7 +44,7 @@ public class TabablzControlProxy : INotifyPropertyChanged
             Content = "This item was added in via code, using Layout.Branch, and TabablzControl.AddToSource"
         };
 
-        branchResult.TabablzControl.AddToSource(newItem);
+        //branchResult.TabablzControl.AddToSource(newItem);
         branchResult.TabablzControl.SelectedItem = newItem;
     }
 
