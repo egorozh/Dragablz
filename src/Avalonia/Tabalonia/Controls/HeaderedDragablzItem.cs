@@ -1,8 +1,7 @@
-using System;
 using Avalonia;
 using Avalonia.Markup.Xaml.Templates;
-using Avalonia.Media;
 using Avalonia.Styling;
+using System;
 
 namespace Tabalonia;
 

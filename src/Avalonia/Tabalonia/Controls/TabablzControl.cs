@@ -1,22 +1,9 @@
 ﻿using Avalonia.Controls;
-using Avalonia.Controls.Presenters;
-using Avalonia.Controls.Primitives;
-using Avalonia.Data;
-using Avalonia.Input;
-using Avalonia.Interactivity;
-using Avalonia.Layout;
-using Avalonia.Markup.Xaml.Templates;
 using Avalonia.Styling;
-using Avalonia.Threading;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.ComponentModel;
-using System.Linq;
 using System.Reactive.Disposables;
 using Tabalonia.Core;
-using Rect = Avalonia.Rect;
 
 namespace Tabalonia;
 

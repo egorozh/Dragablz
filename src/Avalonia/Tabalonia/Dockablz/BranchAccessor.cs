@@ -50,9 +50,9 @@ public class BranchAccessor
     /// <param name="childContentVisitor"></param>
     /// <returns></returns>
     public BranchAccessor Visit(BranchItem childItem,
-        Action<BranchAccessor> childBranchVisitor = null,
-        Action<TabablzControl> childTabablzControlVisitor = null,
-        Action<object> childContentVisitor = null)
+        Action<BranchAccessor>? childBranchVisitor = null,
+        Action<TabablzControl>? childTabablzControlVisitor = null,
+        Action<object>? childContentVisitor = null)
     {
         Func<BranchAccessor> branchGetter;
         Func<TabablzControl> tabGetter;

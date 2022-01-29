@@ -1,58 +1,47 @@
 ﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
+using Avalonia.Data;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Styling;
 using System;
 using System.Linq;
 using System.Reactive.Disposables;
+using Avalonia.Threading;
 using Tabalonia.Core;
 
 namespace Tabalonia;
 
-public enum SizeGrip
-{
-    NotApplicable,
-    Left,
-    TopLeft,
-    Top,
-    TopRight,
-    Right,
-    BottomRight,
-    Bottom,
-    BottomLeft
-}
-
 public class DragablzItem : ContentControl, IStyleable
 {
+    #region Constants
+
     public const string ThumbPartName = "PART_Thumb";
 
-    private readonly SerialDisposable _templateSubscriptions = new SerialDisposable();
-    private readonly SerialDisposable _rightMouseUpCleanUpDisposable = new SerialDisposable();
+    #endregion
 
-    private Thumb _customThumb;
-    private Thumb _thumb;
+    #region Private Fields
+
+    private readonly SerialDisposable _templateSubscriptions = new();
+    private readonly SerialDisposable _rightMouseUpCleanUpDisposable = new();
+
+    private Thumb? _customThumb;
+    private Thumb? _thumb;
     private bool _seizeDragWithTemplate;
-    private Action<DragablzItem> _dragSeizedContinuation;
-    private bool _isTemplateThumbWithMouseAfterSeize = false;
+    private Action<DragablzItem>? _dragSeizedContinuation;
+    private bool _isTemplateThumbWithMouseAfterSeize;
+    private bool _isDragging;
+    private int _logicalIndex;
+    private bool _isSiblingDragging;
+
+    #endregion
 
     #region IStyleable
 
     Type IStyleable.StyleKey => typeof(DragablzItem);
 
     #endregion
-
-    static DragablzItem()
-    {
-        SizeGripProperty.Changed.Subscribe(x => SizeGripPropertyChangedCallback(x.Sender));
-        IsCustomThumbProperty.Changed.Subscribe(x => IsCustomThumbPropertyChangedCallback(x.Sender));
-    }
-
-    public DragablzItem()
-    {
-        //AddHandler(MouseDownEvent, new RoutedEventHandler(MouseDownHandler), true);
-    }
 
     #region Avalonia Properties
 
@@ -62,12 +51,65 @@ public class DragablzItem : ContentControl, IStyleable
     public static readonly StyledProperty<double> YProperty =
         AvaloniaProperty.Register<DragablzItem, double>(nameof(Y));
 
+    public static readonly DirectProperty<DragablzItem, bool> IsDraggingProperty =
+        AvaloniaProperty.RegisterDirect<DragablzItem, bool>(nameof(IsDragging),
+            o => o.IsDragging, (o, v) => o.IsDragging = v);
+
+    public static readonly StyledProperty<bool> IsSelectedProperty =
+        AvaloniaProperty.Register<DragablzItem, bool>(nameof(IsSelected), false,
+            defaultBindingMode: BindingMode.TwoWay);
+
+    public static readonly DirectProperty<DragablzItem, int> LogicalIndexProperty =
+        AvaloniaProperty.RegisterDirect<DragablzItem, int>(nameof(LogicalIndex),
+            o => o.LogicalIndex, (o, v) => o.LogicalIndex = v);
+
+    public static readonly DirectProperty<DragablzItem, bool> IsSiblingDraggingProperty =
+        AvaloniaProperty.RegisterDirect<DragablzItem, bool>(nameof(IsSiblingDragging),
+            o => o.IsSiblingDragging, (o, v) => o.IsSiblingDragging = v);
+
     #endregion
 
     #region Routed Events
 
     public static readonly RoutedEvent<DragablzDragCompletedEventArgs> DragCompleted =
-        RoutedEvent.Register<DragablzItem, DragablzDragCompletedEventArgs>("DragCompleted", RoutingStrategies.Bubble);
+        RoutedEvent.Register<DragablzItem, DragablzDragCompletedEventArgs>("DragCompleted",
+            RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<RoutedPropertyChangedEventArgs<double>> XChangedEvent =
+        RoutedEvent.Register<DragablzItem, RoutedPropertyChangedEventArgs<double>>("XChanged",
+            RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<RoutedPropertyChangedEventArgs<double>> YChangedEvent =
+        RoutedEvent.Register<DragablzItem, RoutedPropertyChangedEventArgs<double>>("YChanged",
+            RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<RoutedPropertyChangedEventArgs<int>> LogicalIndexChangedEvent =
+        RoutedEvent.Register<DragablzItem, RoutedPropertyChangedEventArgs<int>>("LogicalIndexChanged",
+            RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<RoutedPropertyChangedEventArgs<bool>> IsDraggingChangedEvent =
+        RoutedEvent.Register<DragablzItem, RoutedPropertyChangedEventArgs<bool>>("IsDraggingChanged",
+            RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<DragablzDragStartedEventArgs> DragStarted =
+        RoutedEvent.Register<DragablzItem, DragablzDragStartedEventArgs>("DragStarted",
+            RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<DragablzDragDeltaEventArgs> DragDelta =
+        RoutedEvent.Register<DragablzItem, DragablzDragDeltaEventArgs>("DragDelta",
+            RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<DragablzDragDeltaEventArgs> PreviewDragDelta =
+        RoutedEvent.Register<DragablzItem, DragablzDragDeltaEventArgs>("PreviewDragDelta",
+            RoutingStrategies.Tunnel);
+
+    public static readonly RoutedEvent IsSiblingDraggingChangedEvent =
+        RoutedEvent.Register<DragablzItem, RoutedPropertyChangedEventArgs<bool>>("IsSiblingDraggingChanged",
+            RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<DragablzItemEventArgs> MouseDownWithinEvent =
+        RoutedEvent.Register<DragablzItem, DragablzItemEventArgs>("MouseDownWithin",
+            RoutingStrategies.Bubble);
 
     #endregion
 
@@ -90,7 +132,7 @@ public class DragablzItem : ContentControl, IStyleable
         thumb.DragDelta += SizeThumbOnDragDelta;
     }
 
-    private static void SizeThumbOnDragDelta(object sender, VectorEventArgs dragDeltaEventArgs)
+    private static void SizeThumbOnDragDelta(object? sender, VectorEventArgs dragDeltaEventArgs)
     {
         var thumb = ((Thumb) sender);
         var dragablzItem = thumb.VisualTreeAncestory().OfType<DragablzItem>().FirstOrDefault();
@@ -159,6 +201,7 @@ public class DragablzItem : ContentControl, IStyleable
     public static readonly AttachedProperty<bool> IsCustomThumbProperty =
         AvaloniaProperty.RegisterAttached<DragablzItem, Thumb, bool>("IsCustomThumb");
 
+
     private static void IsCustomThumbPropertyChangedCallback(IAvaloniaObject dependencyObject)
     {
         if (dependencyObject is not Thumb thumb)
@@ -183,6 +226,29 @@ public class DragablzItem : ContentControl, IStyleable
     public static bool GetIsCustomThumb(Thumb element)
         => element.GetValue(IsCustomThumbProperty);
 
+    /// <summary>
+    /// Allows item content to be rotated (in suppported templates), typically for use in a vertical/side tab.
+    /// </summary>
+    public static readonly AttachedProperty<double> ContentRotateTransformAngleProperty =
+        AvaloniaProperty.RegisterAttached<DragablzItem, IAvaloniaObject, double>("ContentRotateTransformAngle",
+            inherits: true);
+
+    /// <summary>
+    /// Allows item content to be rotated (in suppported templates), typically for use in a vertical/side tab.
+    /// </summary>
+    /// <param name="element"></param>
+    /// <param name="value"></param>
+    public static void SetContentRotateTransformAngle(IAvaloniaObject element, double value)
+        => element.SetValue(ContentRotateTransformAngleProperty, value);
+
+    /// <summary>
+    /// Allows item content to be rotated (in suppported templates), typically for use in a vertical/side tab.
+    /// </summary>
+    /// <param name="element"></param>
+    /// <returns></returns>
+    public static double GetContentRotateTransformAngle(IAvaloniaObject element)
+        => element.GetValue(ContentRotateTransformAngleProperty);
+
     #endregion
 
     #region Internal Properties
@@ -194,7 +260,7 @@ public class DragablzItem : ContentControl, IStyleable
     internal bool IsDropTargetFound { get; set; }
 
     internal object? UnderlyingContent { get; set; }
-        
+
     #endregion
 
     #region Public Properties
@@ -213,301 +279,81 @@ public class DragablzItem : ContentControl, IStyleable
 
     public int LogicalIndex
     {
-        get;
-        set;
-        //get => (int)GetValue(LogicalIndexProperty);
-        //internal set => SetValue(LogicalIndexPropertyKey, value);
+        get => GetValue(LogicalIndexProperty);
+        internal set => SetAndRaise(LogicalIndexProperty, ref _logicalIndex, value);
     }
 
     public bool IsSelected
     {
-        get;
-        set;
-        //get => (bool)GetValue(IsSelectedProperty);
-        //set => SetValue(IsSelectedProperty, value);
+        get => GetValue(IsSelectedProperty);
+        set => SetValue(IsSelectedProperty, value);
+    }
+
+    public bool IsDragging
+    {
+        get => GetValue(IsDraggingProperty);
+        internal set => SetAndRaise(IsDraggingProperty, ref _isDragging, value);
+    }
+
+    public bool IsSiblingDragging
+    {
+        get => GetValue(IsSiblingDraggingProperty);
+        internal set => SetAndRaise(IsSiblingDraggingProperty, ref _isSiblingDragging, value);
     }
 
     #endregion
 
     #region Events
 
-    #endregion
-
-
-    protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
-    {
-        base.OnPropertyChanged(change);
-
-        if (change.Property == XProperty)
-        {
-            //var args = new RoutedPropertyChangedEventArgs<double>(
-            //    (double)e.OldValue,
-            //    (double)e.NewValue)
-            //{
-            //    RoutedEvent = XChangedEvent
-            //};
-
-            //RaiseEvent(args);
-        }
-        else if (change.Property == YProperty)
-        {
-            //var args = new RoutedPropertyChangedEventArgs<double>(
-            //    (double)e.OldValue,
-            //    (double)e.NewValue)
-            //{
-            //    RoutedEvent = YChangedEvent
-            //};
-            //RaiseEvent(args);
-        }
-    }
-
-    /*   
-   
-    public static readonly RoutedEvent XChangedEvent =
-        EventManager.RegisterRoutedEvent(
-            "XChanged",
-            RoutingStrategy.Bubble,
-            typeof(RoutedPropertyChangedEventHandler<double>),
-            typeof(DragablzItem));
-
-    public event RoutedPropertyChangedEventHandler<double> XChanged
+    public event EventHandler<RoutedPropertyChangedEventArgs<double>> XChanged
     {
         add => AddHandler(XChangedEvent, value);
-        remove => RemoveHandler(IsDraggingChangedEvent, value);
+        remove => RemoveHandler(XChangedEvent, value);
     }
 
-    public static readonly RoutedEvent YChangedEvent =
-        EventManager.RegisterRoutedEvent(
-            "YChanged",
-            RoutingStrategy.Bubble,
-            typeof(RoutedPropertyChangedEventHandler<double>),
-            typeof(DragablzItem));
-
-    public event RoutedPropertyChangedEventHandler<double> YChanged
+    public event EventHandler<RoutedPropertyChangedEventArgs<double>> YChanged
     {
         add => AddHandler(YChangedEvent, value);
-        remove => RemoveHandler(IsDraggingChangedEvent, value);
+        remove => RemoveHandler(YChangedEvent, value);
     }
-    
-    private static readonly DependencyPropertyKey LogicalIndexPropertyKey =
-        DependencyProperty.RegisterReadOnly(
-            "LogicalIndex", typeof (int), typeof (DragablzItem),
-            new PropertyMetadata(default(int), OnLogicalIndexChanged));
 
-    public static readonly DependencyProperty LogicalIndexProperty =
-        LogicalIndexPropertyKey.DependencyProperty;
-
-   
-
-    public static readonly RoutedEvent LogicalIndexChangedEvent =
-        EventManager.RegisterRoutedEvent(
-            "LogicalIndexChanged",
-            RoutingStrategy.Bubble,
-            typeof (RoutedPropertyChangedEventHandler<int>),
-            typeof (DragablzItem));
-
-    public event RoutedPropertyChangedEventHandler<int> LogicalIndexChanged
+    public event EventHandler<RoutedPropertyChangedEventArgs<int>> LogicalIndexChanged
     {
         add => AddHandler(LogicalIndexChangedEvent, value);
         remove => RemoveHandler(LogicalIndexChangedEvent, value);
     }
 
-    private static void OnLogicalIndexChanged(
-        DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var instance = (DragablzItem) d;
-        var args = new RoutedPropertyChangedEventArgs<int>(
-            (int) e.OldValue,
-            (int) e.NewValue)
-        {
-            RoutedEvent = DragablzItem.LogicalIndexChangedEvent
-        };
-        instance.RaiseEvent(args);
-    } 
-
-    
-    
-
-    /// <summary>
-    /// Allows item content to be rotated (in suppported templates), typically for use in a vertical/side tab.
-    /// </summary>
-    public static readonly DependencyProperty ContentRotateTransformAngleProperty = DependencyProperty.RegisterAttached(
-        "ContentRotateTransformAngle", typeof (double), typeof (DragablzItem), new FrameworkPropertyMetadata(default(double), FrameworkPropertyMetadataOptions.Inherits));
-
-    /// <summary>
-    /// Allows item content to be rotated (in suppported templates), typically for use in a vertical/side tab.
-    /// </summary>
-    /// <param name="element"></param>
-    /// <param name="value"></param>
-    public static void SetContentRotateTransformAngle(DependencyObject element, double value)
-    {
-        element.SetValue(ContentRotateTransformAngleProperty, value);
-    }
-
-    /// <summary>
-    /// Allows item content to be rotated (in suppported templates), typically for use in a vertical/side tab.
-    /// </summary>
-    /// <param name="element"></param>
-    /// <returns></returns>
-    public static double GetContentRotateTransformAngle(DependencyObject element)
-    {
-        return (double) element.GetValue(ContentRotateTransformAngleProperty);
-    }
-
-    public static readonly DependencyProperty IsSelectedProperty = DependencyProperty.Register(
-        "IsSelected", typeof(bool), typeof(DragablzItem), new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.AffectsParentMeasure));
-
-   
-
-    private static readonly DependencyPropertyKey IsDraggingPropertyKey =
-        DependencyProperty.RegisterReadOnly(
-            "IsDragging", typeof (bool), typeof (DragablzItem),
-            new PropertyMetadata(default(bool), OnIsDraggingChanged));
-
-    public static readonly DependencyProperty IsDraggingProperty =
-        IsDraggingPropertyKey.DependencyProperty;
-
-    public bool IsDragging
-    {
-        get => (bool) GetValue(IsDraggingProperty);
-        internal set => SetValue(IsDraggingPropertyKey, value);
-    }
-
-    public static readonly RoutedEvent IsDraggingChangedEvent =
-        EventManager.RegisterRoutedEvent(
-            "IsDraggingChanged",
-            RoutingStrategy.Bubble,
-            typeof (RoutedPropertyChangedEventHandler<bool>),
-            typeof (DragablzItem));
-
-    public event RoutedPropertyChangedEventHandler<bool> IsDraggingChanged
+    public event EventHandler<RoutedPropertyChangedEventArgs<bool>> IsDraggingChanged
     {
         add => AddHandler(IsDraggingChangedEvent, value);
         remove => RemoveHandler(IsDraggingChangedEvent, value);
     }
 
-    
-
-    private static void OnIsDraggingChanged(
-        DependencyObject d, DependencyPropertyChangedEventArgs e)
-    {
-        var instance = (DragablzItem)d;
-        var args = new RoutedPropertyChangedEventArgs<bool>(
-            (bool)e.OldValue,
-            (bool)e.NewValue) { RoutedEvent = IsDraggingChangedEvent };
-        instance.RaiseEvent(args);
-    }
-
-    public static readonly RoutedEvent MouseDownWithinEvent =
-        EventManager.RegisterRoutedEvent(
-            "MouseDownWithin",
-            RoutingStrategy.Bubble,
-            typeof(DragablzItemEventHandler),
-            typeof (DragablzItem));
-
-    private static void OnMouseDownWithin(DependencyObject d)
-    {
-        var instance = (DragablzItem)d;
-        instance.RaiseEvent(new DragablzItemEventArgs(MouseDownWithinEvent, instance));
-    }
-
-    private static readonly DependencyPropertyKey IsSiblingDraggingPropertyKey =
-        DependencyProperty.RegisterReadOnly(
-            "IsSiblingDragging", typeof (bool), typeof (DragablzItem),
-            new PropertyMetadata(default(bool), OnIsSiblingDraggingChanged));
-
-    public static readonly DependencyProperty IsSiblingDraggingProperty =
-        IsSiblingDraggingPropertyKey.DependencyProperty;
-
-    public bool IsSiblingDragging
-    {
-        get => (bool) GetValue(IsSiblingDraggingProperty);
-        internal set => SetValue(IsSiblingDraggingPropertyKey, value);
-    }
-
-    public static readonly RoutedEvent IsSiblingDraggingChangedEvent =
-        EventManager.RegisterRoutedEvent(
-            "IsSiblingDraggingChanged",
-            RoutingStrategy.Bubble,
-            typeof (RoutedPropertyChangedEventHandler<bool>),
-            typeof (DragablzItem));
-
-    public event RoutedPropertyChangedEventHandler<bool> IsSiblingDraggingChanged
+    public event EventHandler<RoutedPropertyChangedEventArgs<bool>> IsSiblingDraggingChanged
     {
         add => AddHandler(IsSiblingDraggingChangedEvent, value);
         remove => RemoveHandler(IsSiblingDraggingChangedEvent, value);
     }
 
-    private static void OnIsSiblingDraggingChanged(
-        DependencyObject d, DependencyPropertyChangedEventArgs e)
+    #endregion
+
+    #region Constructors
+
+    static DragablzItem()
     {
-        var instance = (DragablzItem) d;
-        var args = new RoutedPropertyChangedEventArgs<bool>(
-            (bool) e.OldValue,
-            (bool) e.NewValue)
-        {
-            RoutedEvent = IsSiblingDraggingChangedEvent
-        };
-        instance.RaiseEvent(args);
-    }         
-
-    public static readonly RoutedEvent DragStarted =
-        EventManager.RegisterRoutedEvent(
-            "DragStarted",
-            RoutingStrategy.Bubble,
-            typeof(DragablzDragStartedEventHandler),
-            typeof(DragablzItem));
-
-  
-
-    public static readonly RoutedEvent DragDelta =
-        EventManager.RegisterRoutedEvent(
-            "DragDelta",
-            RoutingStrategy.Bubble,
-            typeof (DragablzDragDeltaEventHandler),
-            typeof (DragablzItem));
-
-   
-
-    public static readonly RoutedEvent PreviewDragDelta =
-        EventManager.RegisterRoutedEvent(
-            "PreviewDragDelta",
-            RoutingStrategy.Tunnel,
-            typeof(DragablzDragDeltaEventHandler),
-            typeof(DragablzItem));
-
-    
-
-    
-
-    
-        
-    protected override void OnPreviewMouseRightButtonDown(MouseButtonEventArgs e)
-    {            
-        if (_thumb != null)
-        {
-            var currentThumbIsHitTestVisible = _thumb.IsHitTestVisible;
-            _thumb.SetCurrentValue(IsHitTestVisibleProperty, false);
-            _rightMouseUpCleanUpDisposable.Disposable = Disposable.Create(() =>
-            {
-                _thumb.SetCurrentValue(IsHitTestVisibleProperty, currentThumbIsHitTestVisible);
-            });
-        }
-        else
-        {
-            _rightMouseUpCleanUpDisposable.Disposable = Disposable.Empty;
-        }            
-            
-        base.OnPreviewMouseRightButtonDown(e);
+        SizeGripProperty.Changed.Subscribe(x => SizeGripPropertyChangedCallback(x.Sender));
+        IsCustomThumbProperty.Changed.Subscribe(x => IsCustomThumbPropertyChangedCallback(x.Sender));
+        AffectsMeasure<DragablzItem>(IsSelectedProperty);
     }
 
-    protected override void OnPreviewMouseRightButtonUp(MouseButtonEventArgs e)
+    public DragablzItem()
     {
-        _rightMouseUpCleanUpDisposable.Disposable = Disposable.Empty;
-        base.OnPreviewMouseRightButtonUp(e);
-    }  
-    
-    */
+        AddHandler(PointerPressedEvent, PointerPressedHandler, handledEventsToo: true);
+    }
+
+    #endregion
+
+    #region Internal Methods
 
     internal void InstigateDrag(Action<DragablzItem> continuation)
     {
@@ -521,6 +367,97 @@ public class DragablzItem : ContentControl, IStyleable
         //    _seizeDragWithTemplate = true;
     }
 
+    #endregion
+
+    #region Protected Methods
+
+    protected override void OnPropertyChanged<T>(AvaloniaPropertyChangedEventArgs<T> change)
+    {
+        base.OnPropertyChanged(change);
+
+        if (change.Property == XProperty)
+        {
+            var args = new RoutedPropertyChangedEventArgs<T>(
+                change.OldValue.Value,
+                change.NewValue.Value)
+            {
+                RoutedEvent = XChangedEvent
+            };
+
+            RaiseEvent(args);
+        }
+        else if (change.Property == YProperty)
+        {
+            var args = new RoutedPropertyChangedEventArgs<T>(
+                change.OldValue.Value,
+                change.NewValue.Value)
+            {
+                RoutedEvent = YChangedEvent
+            };
+            RaiseEvent(args);
+        }
+        else if (change.Property == IsDraggingProperty)
+        {
+            var args = new RoutedPropertyChangedEventArgs<T>(
+                    change.OldValue.Value,
+                    change.NewValue.Value)
+                {RoutedEvent = IsDraggingChangedEvent};
+            RaiseEvent(args);
+        }
+        else if (change.Property == IsSiblingDraggingProperty)
+        {
+            var args = new RoutedPropertyChangedEventArgs<T>(
+                change.OldValue.Value,
+                change.NewValue.Value)
+            {
+                RoutedEvent = IsSiblingDraggingChangedEvent
+            };
+            RaiseEvent(args);
+        }
+        else if (change.Property == LogicalIndexProperty)
+        {
+            var args = new RoutedPropertyChangedEventArgs<T>(
+                change.OldValue.Value,
+                change.NewValue.Value)
+            {
+                RoutedEvent = LogicalIndexChangedEvent
+            };
+            RaiseEvent(args);
+        }
+    }
+
+    protected override void OnPointerPressed(PointerPressedEventArgs e)
+    {
+        if (e.GetCurrentPoint(this).Properties.IsRightButtonPressed)
+        {
+            if (_thumb != null)
+            {
+                var currentThumbIsHitTestVisible = _thumb.IsHitTestVisible;
+                _thumb.SetValue(IsHitTestVisibleProperty, false);
+                _rightMouseUpCleanUpDisposable.Disposable = Disposable.Create(() =>
+                {
+                    _thumb.SetValue(IsHitTestVisibleProperty, currentThumbIsHitTestVisible);
+                });
+            }
+            else
+            {
+                _rightMouseUpCleanUpDisposable.Disposable = Disposable.Empty;
+            }
+        }
+
+        base.OnPointerPressed(e);
+    }
+
+    protected override void OnPointerReleased(PointerReleasedEventArgs e)
+    {
+        if (e.InitialPressMouseButton == MouseButton.Right)
+        {
+            _rightMouseUpCleanUpDisposable.Disposable = Disposable.Empty;
+        }
+
+        base.OnPointerReleased(e);
+    }
+
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -532,14 +469,23 @@ public class DragablzItem : ContentControl, IStyleable
         {
             _isTemplateThumbWithMouseAfterSeize = true;
             //Mouse.AddLostMouseCaptureHandler(this, LostMouseAfterSeizeHandler);
-            if (_dragSeizedContinuation != null)
-                _dragSeizedContinuation(this);
+            _dragSeizedContinuation?.Invoke(this);
             _dragSeizedContinuation = null;
 
-            //Dispatcher.BeginInvoke(new Action(() => thumb.RaiseEvent(new MouseButtonEventArgs(InputManager.Current.PrimaryMouseDevice,
-            //        0,
-            //        MouseButton.Left)
-            //{ RoutedEvent = MouseLeftButtonDownEvent })));
+            Dispatcher.UIThread.InvokeAsync(() =>
+            {
+                //var eventArgs = new MouseButtonEventArgs(InputManager.Current.PrimaryMouseDevice,
+                //    0,
+                //    MouseButton.Left)
+                //{
+                //    RoutedEvent = MouseLeftButtonDownEvent
+                //};
+
+                var eventArgs = new PointerEventArgs(PointerPressedEvent, this, new Pointer(0, PointerType.Mouse, true),
+                    this, new Point(), 0, PointerPointProperties.None, KeyModifiers.None);
+
+                thumb.RaiseEvent(eventArgs);
+            });
         }
 
         _seizeDragWithTemplate = false;
@@ -562,6 +508,10 @@ public class DragablzItem : ContentControl, IStyleable
         _customThumb = FindCustomThumb();
         //_templateSubscriptions.Disposable = SelectAndSubscribeToThumb().Item2;
     }
+
+    #endregion
+
+    #region Private Methods
 
     private Tuple<Thumb, IDisposable> SelectAndSubscribeToThumb(TemplateAppliedEventArgs e)
     {
@@ -596,23 +546,30 @@ public class DragablzItem : ContentControl, IStyleable
     {
         var thumb = (Thumb) sender;
 
-        //var previewEventArgs = new DragablzDragDeltaEventArgs(PreviewDragDelta, this, dragDeltaEventArgs);
-        //OnPreviewDragDelta(previewEventArgs);
-        //if (previewEventArgs.Cancel)
-        //    thumb.CancelDrag();
-        //if (!previewEventArgs.Handled)
-        //{
-        //    var eventArgs = new DragablzDragDeltaEventArgs(DragDelta, this, dragDeltaEventArgs);
-        //    OnDragDelta(eventArgs);
-        //    if (eventArgs.Cancel)
-        //        thumb.CancelDrag();
-        //}
+        var previewEventArgs = new DragablzDragDeltaEventArgs(PreviewDragDelta, this, dragDeltaEventArgs);
+        OnPreviewDragDelta(previewEventArgs);
+        if (previewEventArgs.Cancel)
+        {
+            //thumb.CancelDrag();
+        }
+
+        if (!previewEventArgs.Handled)
+        {
+            var eventArgs = new DragablzDragDeltaEventArgs(DragDelta, this, dragDeltaEventArgs);
+            OnDragDelta(eventArgs);
+
+            if (eventArgs.Cancel)
+            {
+                //thumb.CancelDrag();
+            }
+        }
     }
 
-    private void ThumbOnDragStarted(object? sender, VectorEventArgs dragStartedEventArgs)
+    private void ThumbOnDragStarted(object? sender, VectorEventArgs args)
     {
         //MouseAtDragStart = Mouse.GetPosition(this);
-        //OnDragStarted(new DragablzDragStartedEventArgs(DragStarted, this, dragStartedEventArgs));
+        MouseAtDragStart = new MouseDevice().GetPosition(this);
+        OnDragStarted(new DragablzDragStartedEventArgs(DragStarted, this, args));
     }
 
     private static void ApplyCustomThumbSetting(Thumb thumb)
@@ -631,9 +588,9 @@ public class DragablzItem : ContentControl, IStyleable
         //        { RoutedEvent = MouseLeftButtonDownEvent })));
     }
 
-    private void MouseDownHandler(object sender, RoutedEventArgs routedEventArgs)
+    private void PointerPressedHandler(object? sender, PointerPressedEventArgs e)
     {
-        //OnMouseDownWithin(this);
+        RaiseEvent(new DragablzItemEventArgs(MouseDownWithinEvent, this));
     }
 
     private static void CustomThumbOnLoaded(object sender, RoutedEventArgs routedEventArgs)
@@ -647,6 +604,9 @@ public class DragablzItem : ContentControl, IStyleable
     {
         return this.VisualTreeDepthFirstTraversal().OfType<Thumb>().FirstOrDefault(GetIsCustomThumb);
     }
+
+    #endregion
+
 
     //private void LostMouseAfterSeizeHandler(object sender, MouseEventArgs mouseEventArgs)
     //{

@@ -4,8 +4,6 @@ using Avalonia.Interactivity;
 
 namespace Tabalonia;
 
-public delegate void DragablzDragDeltaEventHandler(object sender, DragablzDragDeltaEventArgs e);
-
 public class DragablzDragDeltaEventArgs : DragablzItemEventArgs
 {
     public DragablzDragDeltaEventArgs(DragablzItem dragablzItem, VectorEventArgs dragDeltaEventArgs)

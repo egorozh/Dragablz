@@ -6,11 +6,9 @@ namespace Tabalonia;
 
 public class DragablzIcon : TemplatedControl, IStyleable
 {
-
     #region IStyleable
 
     Type IStyleable.StyleKey => typeof(DragablzIcon);
 
     #endregion
-
 }

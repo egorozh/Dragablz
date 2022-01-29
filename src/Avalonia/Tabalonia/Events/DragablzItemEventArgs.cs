@@ -3,8 +3,6 @@ using Avalonia.Interactivity;
 
 namespace Tabalonia;
 
-public delegate void DragablzItemEventHandler(object sender, DragablzItemEventArgs e);
-
 public class DragablzItemEventArgs : RoutedEventArgs
 {
     public DragablzItemEventArgs(DragablzItem dragablzItem)
