@@ -13,16 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DragablzDemo
+namespace DragablzDemo;
+
+/// <summary>
+/// Interaction logic for LayoutManagementExample.xaml
+/// </summary>
+public partial class LayoutManagementExample : UserControl
 {
-    /// <summary>
-    /// Interaction logic for LayoutManagementExample.xaml
-    /// </summary>
-    public partial class LayoutManagementExample : UserControl
+    public LayoutManagementExample()
     {
-        public LayoutManagementExample()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

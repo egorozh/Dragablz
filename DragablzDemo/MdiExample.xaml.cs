@@ -13,16 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DragablzDemo
+namespace DragablzDemo;
+
+/// <summary>
+/// Interaction logic for MdiExample.xaml
+/// </summary>
+public partial class MdiExample : UserControl
 {
-    /// <summary>
-    /// Interaction logic for MdiExample.xaml
-    /// </summary>
-    public partial class MdiExample : UserControl
+    public MdiExample()
     {
-        public MdiExample()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

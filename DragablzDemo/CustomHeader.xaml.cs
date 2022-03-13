@@ -13,16 +13,15 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace DragablzDemo
+namespace DragablzDemo;
+
+/// <summary>
+/// Interaction logic for CustomHeader.xaml
+/// </summary>
+public partial class CustomHeader : UserControl
 {
-    /// <summary>
-    /// Interaction logic for CustomHeader.xaml
-    /// </summary>
-    public partial class CustomHeader : UserControl
+    public CustomHeader()
     {
-        public CustomHeader()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
     }
 }

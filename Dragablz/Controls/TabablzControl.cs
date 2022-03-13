@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Dragablz.Core;
+using Dragablz.Dockablz;
+using Dragablz.Referenceless;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -10,11 +13,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Threading;
-using Dragablz.Core;
-using Dragablz.Dockablz;
-using Dragablz.Referenceless;
 
 namespace Dragablz
 {
@@ -692,7 +691,8 @@ namespace Dragablz
                             _dragablzItemsControl.ItemContainerGenerator.StatusChanged -=
                                 ItemContainerGeneratorOnStatusChanged);                
 
-                _dragablzItemsControl.ContainerCustomisations = new ContainerCustomisations(null, PrepareChildContainerForItemOverride);
+                _dragablzItemsControl.ContainerCustomisations = 
+                    new ContainerCustomisations(null, PrepareChildContainerForItemOverride);
             }
 
             if (SelectedItem == null)

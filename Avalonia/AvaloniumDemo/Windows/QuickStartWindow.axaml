@@ -1,0 +1,38 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:avalonium="clr-namespace:Avalonium;assembly=Avalonium"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="AvaloniumDemo.Windows.QuickStartWindow"
+
+        Title="Quick Start Window" Height="341" Width="617">
+
+
+    <avalonium:TabsControl Margin="8">
+
+        <TabItem Header="Tab No. 1" IsSelected="True">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Hello World</TextBlock>
+        </TabItem>
+       
+        <TabItem Header="Tab No. 2">
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">We Have Tearable Tabs!</TextBlock>
+        </TabItem>
+
+        <TabItem>
+            <!-- with context menu -->
+            <TabItem.Header>
+                <Grid>
+                    <Grid.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem />
+                        </ContextMenu>
+                    </Grid.ContextMenu>
+                    <TextBlock>Tab No. 3</TextBlock>
+                </Grid>
+            </TabItem.Header>
+            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">I feel like an ice cold drink</TextBlock>
+        </TabItem>
+    </avalonium:TabsControl>
+
+</Window>

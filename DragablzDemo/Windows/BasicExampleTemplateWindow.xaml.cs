@@ -10,20 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Windows.Threading;
 
-namespace DragablzDemo
+namespace DragablzDemo;
+
+/// <summary>
+/// Interaction logic for BasicExampleTemplateWindow.xaml
+/// </summary>
+public partial class BasicExampleTemplateWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for BoundExampleWindow.xaml
-    /// </summary>
-    public partial class BoundExampleWindow
+    public BasicExampleTemplateWindow()
     {
-        public BoundExampleWindow()
-        {
-            InitializeComponent();
-        }
-    }
+        InitializeComponent();
+    }        
 }
