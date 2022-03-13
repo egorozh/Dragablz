@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:dockablz="clr-namespace:Tabalonia.Dockablz;assembly=Tabalonia"
+        xmlns:tabalonia="clr-namespace:Tabalonia;assembly=Tabalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Tabalonia.Demo.BoundExampleWindow"
+        Title="BoundExampleWindow">
+
+    <!--<dockablz:Layout Partition="2AE89D18-F236-4D20-9605-6C03319038E6" 
+                     Name="RootLayout"
+                     FloatingItemsSource="{Binding ToolItems}"
+                     FloatingItemHeaderMemberPath="Header"
+                     IsFloatDropZoneEnabled="True"
+                     ClosingFloatingItemCallback="{Binding ClosingFloatingItemHandler}"
+                     FloatingItemsContainerMargin="0 2 0 0">
+        --><!-- branch template lets dragablz create a new tab control after a window is split via docking --><!--
+        <dockablz:Layout.BranchTemplate>
+            <DataTemplate>
+                <tabalonia:TabablzControl Style="{StaticResource TabablzControlStyle}">
+                    <tabalonia:TabablzControl.InterTabController>
+                        <tabalonia:InterTabController InterTabClient="{Binding InterTabClient}" Partition="2AE89D18-F236-4D20-9605-6C03319038E6" />
+                    </tabalonia:TabablzControl.InterTabController>
+                </tabalonia:TabablzControl>
+            </DataTemplate>
+        </dockablz:Layout.BranchTemplate>
+       
+        --><!-- a root, named tab control is needed, so when a tab is torn and a new window is created, the new target tab control can be identified --><!--
+        <tabalonia:TabablzControl x:Name="InitialTabablzControl"
+                                  FixedHeaderCount="1"
+                                  Style="{StaticResource TabablzControlStyle}"
+                                  AddLocationHint="After">
+            <tabalonia:TabablzControl.InterTabController>
+                <tabalonia:InterTabController InterTabClient="{Binding InterTabClient}" Partition="2AE89D18-F236-4D20-9605-6C03319038E6" />
+            </tabalonia:TabablzControl.InterTabController>
+        </tabalonia:TabablzControl>
+    </dockablz:Layout>-->
+</Window>

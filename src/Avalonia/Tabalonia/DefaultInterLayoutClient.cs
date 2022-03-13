@@ -1,0 +1,45 @@
+using System;
+using Avalonia;
+
+namespace Tabalonia;
+
+/// <summary>
+/// Provides a simple implementation of <see cref="IInterLayoutClient"/>, but only really useful if 
+/// <see cref="TabItem"/> instances are specified in XAML.  If you are binding via ItemsSource then
+/// you most likely want to create your own implementation of <see cref="IInterLayoutClient"/>.
+/// </summary>
+public class DefaultInterLayoutClient : IInterLayoutClient
+{
+    public INewTabHost<IAvaloniaObject> GetNewHost(object partition, TabablzControl source)
+    {
+        var tabablzControl = new TabablzControl {DataContext = source.DataContext};
+
+        Clone(source, tabablzControl);
+
+        if (source.InterTabController == null)
+            throw new InvalidOperationException("Source tab does not have an InterTabCOntroller set.  Ensure this is set on initial, and subsequently generated tab controls.");
+
+        var newInterTabController = new InterTabController
+        {
+            Partition = source.InterTabController.Partition
+        };
+
+        Clone(source.InterTabController, newInterTabController);
+        tabablzControl.InterTabController= newInterTabController;            
+
+        return new NewTabHost<IAvaloniaObject>(tabablzControl, tabablzControl);
+    }
+
+    private static void Clone(IAvaloniaObject from, IAvaloniaObject to)
+    {
+        //var localValueEnumerator = from.GetLocalValueEnumerator();
+        //while (localValueEnumerator.MoveNext())
+        //{
+        //    if (localValueEnumerator.Current.Property.ReadOnly ||
+        //        localValueEnumerator.Current.Value is FrameworkElement) continue;
+                
+        //    if (!(localValueEnumerator.Current.Value is BindingExpressionBase))
+        //        to.SetCurrentValue(localValueEnumerator.Current.Property, localValueEnumerator.Current.Value);                
+        //}            
+    }
+}

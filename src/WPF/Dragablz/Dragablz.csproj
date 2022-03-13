@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+	<PropertyGroup>
+		<TargetFrameworks>net6.0-windows</TargetFrameworks>
+		<UseWPF>true</UseWPF>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<RepositoryType>git</RepositoryType>
+		
+
+		<Authors>Egorozh</Authors>
+		<PackageId>DragablzF</PackageId>
+		<Version>0.1.0.2</Version>
+		<AssemblyVersion>0.1.0.2</AssemblyVersion>
+		<FileVersion>0.1.0.2</FileVersion>
+		<Description>Fork of the Dragablz library</Description>
+		<PackageIconUrl>https://raw.githubusercontent.com/ButchersBoy/Dragablz/master/Resources/D32.png</PackageIconUrl>
+		<PackageLicenseExpression></PackageLicenseExpression>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<PackageProjectUrl>http://dragablz.net</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/egorozh/Dragablz</RepositoryUrl>
+		<PackageTags>WPF TabControl Tab Tearable</PackageTags>
+		<PackageReleaseNotes>Support for .Net5.0</PackageReleaseNotes>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\LICENSE">
+			<Pack>True</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
+
+	<Import Project="..\..\Core\Tabalonia.Shared\Tabalonia.Shared.projitems" Label="Shared" />
+
+</Project>

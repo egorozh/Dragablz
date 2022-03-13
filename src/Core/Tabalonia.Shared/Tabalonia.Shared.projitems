@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>2cf06f55-f1bc-4505-80f0-40a419c26876</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>Tabalonia.Shared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)Core\CollectionTeaser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\ElementNotFoundOnStyleException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\FuncComparer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\HitTest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\MultiComparer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\SystemCommand.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Core\WindowMessage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dockablz\BranchItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dockablz\DropZoneLocation.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dockablz\LocationReportException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Dockablz\TilerCalculator.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)EmptyHeaderSizingHint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Events\OrderChangedEventArgs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)HeaderedItemViewModel.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)AddLocationHint.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)MoveItemRequest.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Referenceless\AnonymousDisposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Referenceless\DefaultDisposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Referenceless\Disposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Referenceless\ICancelable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Referenceless\SerialDisposable.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TabEmptiedResponse.cs" />
+  </ItemGroup>
+</Project>
