@@ -6,6 +6,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Avalonia.Data;
+using Avalonia.Styling;
 
 namespace Tabalonia.Dockablz;
 
@@ -17,7 +19,7 @@ public delegate void ClosingFloatingItemCallback(ItemActionCallbackArgs<Layout> 
 //[TemplatePart(Name = LeftDropZonePartName, Type = typeof(DropZone))]
 //[TemplatePart(Name = FloatingDropZonePartName, Type = typeof(DropZone))]
 //[TemplatePart(Name = FloatingContentPresenterPartName, Type = typeof(ContentPresenter))]
-public class Layout : ContentControl
+public class Layout : ContentControl, IStyleable
 {
     private static readonly HashSet<Layout> LoadedLayouts = new();
     private const string TopDropZonePartName = "PART_TopDropZone";
@@ -36,7 +38,13 @@ public class Layout : ContentControl
     private FloatTransfer _floatTransfer;
 
     #endregion
-    
+
+    #region IStyleable
+
+    Type IStyleable.StyleKey => typeof(Branch);
+
+    #endregion
+
     #region Attached Properties
 
     public static readonly AttachedProperty<WindowState> FloatingItemStateProperty =
@@ -82,6 +90,13 @@ public class Layout : ContentControl
 
     #region Constructor
 
+    static Layout()
+    {
+        //EventManager.RegisterClassHandler(typeof(DragablzItem), DragablzItem.DragStarted, new DragablzDragStartedEventHandler(ItemDragStarted));
+        //EventManager.RegisterClassHandler(typeof(DragablzItem), DragablzItem.PreviewDragDelta, new DragablzDragDeltaEventHandler(PreviewItemDragDelta), true);
+        //EventManager.RegisterClassHandler(typeof(DragablzItem), DragablzItem.DragCompleted, new DragablzDragCompletedEventHandler(ItemDragCompleted));
+    }
+
     public Layout()
     {
         //Loaded += (sender, args) =>
@@ -109,21 +124,20 @@ public class Layout : ContentControl
             //    ClearingFloatingContainerForItemOverride)
         };
 
-    //    var floatingItemsSourceBinding = new Binding("FloatingItemsSource") { Source = this };
-    //    _floatingItems.SetBinding(ItemsControl.ItemsSourceProperty, floatingItemsSourceBinding);
-    //    var floatingItemsControlStyleBinding = new Binding("FloatingItemsControlStyle") { Source = this };
-    //    _floatingItems.SetBinding(StyleProperty, floatingItemsControlStyleBinding);
-    //    var floatingItemTemplateBinding = new Binding("FloatingItemTemplate") { Source = this };
-    //    _floatingItems.SetBinding(ItemsControl.ItemTemplateProperty, floatingItemTemplateBinding);
-    //    var floatingItemTemplateSelectorBinding = new Binding("FloatingItemTemplateSelector") { Source = this };
-    //    _floatingItems.SetBinding(ItemsControl.ItemTemplateSelectorProperty, floatingItemTemplateSelectorBinding);
-    //    var floatingItemContainerStyeBinding = new Binding("FloatingItemContainerStyle") { Source = this };
-    //    _floatingItems.SetBinding(ItemsControl.ItemContainerStyleProperty, floatingItemContainerStyeBinding);
-    //    var floatingItemContainerStyleSelectorBinding = new Binding("FloatingItemContainerStyleSelector") { Source = this };
-    //    _floatingItems.SetBinding(ItemsControl.ItemContainerStyleSelectorProperty, floatingItemContainerStyleSelectorBinding);
+        var floatingItemsSourceBinding = new Binding("FloatingItemsSource") { Source = this };
+        _floatingItems.Bind(ItemsControl.ItemsSourceProperty, floatingItemsSourceBinding);
+        var floatingItemsControlStyleBinding = new Binding("FloatingItemsControlStyle") { Source = this };
+        _floatingItems.Bind(StyleProperty, floatingItemsControlStyleBinding);
+        var floatingItemTemplateBinding = new Binding("FloatingItemTemplate") { Source = this };
+        _floatingItems.Bind(ItemsControl.ItemTemplateProperty, floatingItemTemplateBinding);
+        var floatingItemTemplateSelectorBinding = new Binding("FloatingItemTemplateSelector") { Source = this };
+        _floatingItems.Bind(ItemsControl.ItemTemplateSelectorProperty, floatingItemTemplateSelectorBinding);
+        var floatingItemContainerStyeBinding = new Binding("FloatingItemContainerStyle") { Source = this };
+        _floatingItems.Bind(ItemsControl.ItemContainerStyleProperty, floatingItemContainerStyeBinding);
+        var floatingItemContainerStyleSelectorBinding = new Binding("FloatingItemContainerStyleSelector") { Source = this };
+        _floatingItems.Bind(ItemsControl.ItemContainerStyleSelectorProperty, floatingItemContainerStyleSelectorBinding);
     }
-
-
+    
     #endregion
 
 
@@ -239,14 +253,7 @@ public class Layout : ContentControl
         
     
 
-    static Layout()
-    {
-        DefaultStyleKeyProperty.OverrideMetadata(typeof(Layout), new FrameworkPropertyMetadata(typeof(Layout)));
-            
-        EventManager.RegisterClassHandler(typeof(DragablzItem), DragablzItem.DragStarted, new DragablzDragStartedEventHandler(ItemDragStarted));
-        EventManager.RegisterClassHandler(typeof(DragablzItem), DragablzItem.PreviewDragDelta, new DragablzDragDeltaEventHandler(PreviewItemDragDelta), true);            
-        EventManager.RegisterClassHandler(typeof(DragablzItem), DragablzItem.DragCompleted, new DragablzDragCompletedEventHandler(ItemDragCompleted));            
-    }        
+          
 
     
        

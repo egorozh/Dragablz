@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
-using Avalonia;
-using Avalonia.VisualTree;
+﻿using Avalonia.VisualTree;
 using Dragablz.Dockablz;
+using System;
+using System.Linq;
 using Tabalonia.Core;
 
 namespace Tabalonia.Dockablz;
