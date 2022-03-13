@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Avalonia", "Avalonia", "{514BB202-5B26-467A-BCAE-43FC8C876FAA}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AvaloniumDemo", "Avalonia\AvaloniumDemo\AvaloniumDemo.csproj", "{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avalonium", "Avalonia\Avalonium\Avalonium.csproj", "{B253F02D-2045-4015-92F8-FA2A1958A8C4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Debug|x86.Build.0 = Debug|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Release|x86.ActiveCfg = Release|Any CPU
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE}.Release|x86.Build.0 = Release|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Debug|x86.Build.0 = Debug|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Release|x86.ActiveCfg = Release|Any CPU
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4}.Release|x86.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{81E0A6C1-51CD-46CD-BB32-D093C630D9DE} = {514BB202-5B26-467A-BCAE-43FC8C876FAA}
+		{B253F02D-2045-4015-92F8-FA2A1958A8C4} = {514BB202-5B26-467A-BCAE-43FC8C876FAA}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AD581326-677F-4EEB-8B87-71546D0AAF5C}
+	EndGlobalSection
+EndGlobal

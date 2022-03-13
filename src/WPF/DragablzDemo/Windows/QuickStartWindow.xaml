@@ -5,9 +5,11 @@
         xmlns:dockablz="clr-namespace:Dragablz.Dockablz;assembly=Dragablz"
         xmlns:system="clr-namespace:System;assembly=mscorlib"
         Title="Quick Start Window" Height="341" Width="617">
+
     <Window.Resources>
         <system:String x:Key="Partition">QuickStart</system:String>
     </Window.Resources>
+
     <dockablz:Layout Partition="{StaticResource Partition}">
         <dragablz:TabablzControl Margin="8" ConsolidateOrphanedItems="True">
             <dragablz:TabablzControl.InterTabController>
