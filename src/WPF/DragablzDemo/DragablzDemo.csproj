@@ -11,9 +11,5 @@
   <ItemGroup>
     <ProjectReference Include="..\Dragablz\Dragablz.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
-
+ 
 </Project>
