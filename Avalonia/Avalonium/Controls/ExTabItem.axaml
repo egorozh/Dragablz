@@ -23,6 +23,7 @@
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Foreground" Value="{DynamicResource TabItemHeaderForegroundUnselected}" />
 		<Setter Property="Padding" Value="{DynamicResource TabItemHeaderMargin}" />
+		<Setter Property="Margin" Value="0" />
 	    <Setter Property="MinHeight" Value="32" />
 		<Setter Property="Height" Value="32" />
 		<Setter Property="VerticalContentAlignment" Value="Center" />
@@ -34,7 +35,8 @@
 					<Path Fill="{TemplateBinding Background}"
                           Stretch="Uniform"
                           Height="4"
-                          VerticalAlignment="Bottom">
+                          VerticalAlignment="Bottom"
+                          Name="PART_LeftCorner">
 						<Path.Data>
 							<PathGeometry>
 								<PathFigure StartPoint="0 0"
@@ -80,7 +82,8 @@
                           Stretch="Uniform"
                           Height="4"
                           Fill="{TemplateBinding Background}"
-                          VerticalAlignment="Bottom">
+                          VerticalAlignment="Bottom"
+                          Name="PART_RightCorner">
 						<Path.Data>
 							<PathGeometry>
 								<PathFigure StartPoint="0 -4"
@@ -125,18 +128,36 @@
 		<Setter Property="Background" Value="{DynamicResource TabItemHeaderBackgroundUnselectedPointerOver}" />
 		<Setter Property="TextBlock.Foreground" Value="{DynamicResource TabItemHeaderForegroundUnselectedPointerOver}" />
 	</Style>
+    <Style Selector="local|ExTabItem:pointerover /template/ Path#PART_RightCorner">
+        <Setter Property="Fill" Value="{DynamicResource TabItemHeaderBackgroundUnselectedPointerOver}" />
+    </Style>
+    <Style Selector="local|ExTabItem:pointerover /template/ Path#PART_LeftCorner">
+        <Setter Property="Fill" Value="{DynamicResource TabItemHeaderBackgroundUnselectedPointerOver}" />
+    </Style>
 
 	<!-- Selected PointerOver state -->
 	<Style Selector="local|ExTabItem:selected:pointerover /template/ Border#PART_LayoutRoot">
 		<Setter Property="Background" Value="{DynamicResource SelectedTabItemBackgroundBrush}" />
 		<Setter Property="TextBlock.Foreground" Value="{DynamicResource TabItemHeaderForegroundSelectedPointerOver}" />
 	</Style>
+    <Style Selector="local|ExTabItem:selected:pointerover /template/ Path#PART_RightCorner">
+        <Setter Property="Fill" Value="{DynamicResource SelectedTabItemBackgroundBrush}" />
+    </Style>
+    <Style Selector="local|ExTabItem:selected:pointerover /template/ Path#PART_LeftCorner">
+        <Setter Property="Fill" Value="{DynamicResource SelectedTabItemBackgroundBrush}" />
+    </Style>
 
 	<!-- Disabled state -->
 	<Style Selector="local|ExTabItem:disabled /template/ Border#PART_LayoutRoot">
 		<Setter Property="Background" Value="{DynamicResource TabItemHeaderBackgroundDisabled}" />
 		<Setter Property="TextBlock.Foreground" Value="{DynamicResource TabItemHeaderForegroundDisabled}" />
 	</Style>
+    <Style Selector="local|ExTabItem:disabled /template/ Path#PART_RightCorner">
+        <Setter Property="Fill" Value="{DynamicResource TabItemHeaderBackgroundDisabled}" />
+    </Style>
+    <Style Selector="local|ExTabItem:disabled /template/ Path#PART_LeftCorner">
+        <Setter Property="Fill" Value="{DynamicResource TabItemHeaderBackgroundDisabled}" />
+    </Style>
 
 	<Style Selector="local|ExTabItem[TabStripPlacement=Left] /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Margin" Value="8,0,0,0" />
