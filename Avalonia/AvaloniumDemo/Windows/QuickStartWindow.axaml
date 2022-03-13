@@ -12,11 +12,22 @@
     <avalonium:TabsControl Margin="8">
 
         <TabItem Header="Tab No. 1" IsSelected="True">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">Hello World</TextBlock>
+            <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    Hello World
+                </TextBlock>
+            </Grid>
         </TabItem>
-       
+
         <TabItem Header="Tab No. 2">
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">We Have Tearable Tabs!</TextBlock>
+            <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    We Have Tearable Tabs!
+                </TextBlock>
+            </Grid>
+
         </TabItem>
 
         <TabItem>
@@ -31,7 +42,40 @@
                     <TextBlock>Tab No. 3</TextBlock>
                 </Grid>
             </TabItem.Header>
-            <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">I feel like an ice cold drink</TextBlock>
+            <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
+                <TextBlock Background="{DynamicResource SelectedTabItemBackgroundBrush}"
+                           HorizontalAlignment="Center" VerticalAlignment="Center">
+                    I feel like an ice cold drink
+                </TextBlock>
+            </Grid>
+
+        </TabItem>
+        <TabItem Header="Tab No. 4">
+            <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    We Have Tearable Tabs!
+                </TextBlock>
+            </Grid>
+
+        </TabItem>
+        <TabItem Header="Tab No. 5">
+            <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    We Have Tearable Tabs!
+                </TextBlock>
+            </Grid>
+
+        </TabItem>
+        <TabItem Header="Tab No. 6">
+            <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
+                <TextBlock HorizontalAlignment="Center"
+                           VerticalAlignment="Center">
+                    We Have Tearable Tabs!
+                </TextBlock>
+            </Grid>
+
         </TabItem>
     </avalonium:TabsControl>
 

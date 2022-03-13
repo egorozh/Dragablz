@@ -14,7 +14,14 @@ public class ExTabItem : TabItem
 
     public void InitPosition()
     {
-        Canvas.SetLeft(this, TabIndex * Bounds.Width);
+        var offset = 0.0;
+
+        if (Parent is TabsControl tabsControl) 
+            offset = tabsControl.AdjacentHeaderItemOffset;
+
+        offset = TabIndex == 0 ? 0.0 : offset;
+
+        Canvas.SetLeft(this, TabIndex * Bounds.Width - offset * TabIndex);
         Canvas.SetTop(this, 0);
     }
 

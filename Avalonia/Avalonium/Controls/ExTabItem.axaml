@@ -23,8 +23,7 @@
 		<Setter Property="Background" Value="Transparent" />
 		<Setter Property="Foreground" Value="{DynamicResource TabItemHeaderForegroundUnselected}" />
 		<Setter Property="Padding" Value="{DynamicResource TabItemHeaderMargin}" />
-		<Setter Property="Margin" Value="-8 0 0 0" />
-		<Setter Property="MinHeight" Value="32" />
+	    <Setter Property="MinHeight" Value="32" />
 		<Setter Property="Height" Value="32" />
 		<Setter Property="VerticalContentAlignment" Value="Center" />
 		<Setter Property="CornerRadius" Value="4 4 0 0" />

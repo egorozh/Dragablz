@@ -27,7 +27,7 @@
 
 	<Style Selector="local|TabsControl">
         <Setter Property="Margin" Value="0" />
-		<Setter Property="Padding" Value="{DynamicResource TabItemMargin}" />
+		<Setter Property="Padding" Value="0 30 0 0" />
 		<Setter Property="Background" Value="{DynamicResource TabControlBackground}" />
 		<Setter Property="Template">
 			<ControlTemplate TargetType="local:TabsControl">
