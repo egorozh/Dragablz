@@ -10,5 +10,11 @@
 		<PackageReference Include="Avalonia" Version="0.10.12" />
 		<PackageReference Include="Avalonia.Xaml.Behaviors" Version="0.10.12" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Controls\DragTabItem.axaml.cs">
+	    <DependentUpon>DragTabItem.axaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
 	
 </Project>

@@ -51,13 +51,13 @@ public class TabsControl : TabControl
     }
 
     protected override IItemContainerGenerator CreateItemContainerGenerator()
-        => new ExTabItemContainerGenerator(this);
+        => new DragTabItemContainerGenerator(this);
 
     protected override void OnContainersMaterialized(ItemContainerEventArgs e)
     {
         base.OnContainersMaterialized(e);
 
-        if (e.Containers.FirstOrDefault() is { ContainerControl: ExTabItem exTabItem } info)
+        if (e.Containers.FirstOrDefault() is { ContainerControl: DragTabItem exTabItem } info)
         {
             exTabItem.TabIndex = info.Index;
         }

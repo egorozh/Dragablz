@@ -17,7 +17,7 @@
 		<x:Double x:Key="TabItemPipeThickness">2</x:Double>
 	</Styles.Resources>
 
-	<Style Selector="local|ExTabItem">
+	<Style Selector="local|DragTabItem">
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="FontWeight" Value="{DynamicResource TabItemHeaderThemeFontWeight}" />
 		<Setter Property="Background" Value="Transparent" />
@@ -103,71 +103,71 @@
 	</Style>
 
 	<!-- Nornal state -->
-	<Style Selector="local|ExTabItem /template/ Border#PART_LayoutRoot">
+	<Style Selector="local|DragTabItem /template/ Border#PART_LayoutRoot">
 		<Setter Property="Background" Value="{Binding $parent[TabItem].Background}" />
 	</Style>
 
-	<Style Selector="local|ExTabItem /template/ Border#PART_SelectedPipe">
+	<Style Selector="local|DragTabItem /template/ Border#PART_SelectedPipe">
 		<Setter Property="IsVisible" Value="False" />
 		<Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
 	</Style>
 
 	<!-- Selected state -->
 	<!--  We don't use selector to PART_LayoutRoot, so developer can override selected item background with TabStripItem.Background  -->
-	<Style Selector="local|ExTabItem:selected">
+	<Style Selector="local|DragTabItem:selected">
 		<Setter Property="Background" Value="{DynamicResource SelectedTabItemBackgroundBrush}" />
 		<Setter Property="TextBlock.Foreground" Value="{DynamicResource TabItemHeaderForegroundSelected}" />
 	</Style>
 
-	<Style Selector="local|ExTabItem:selected /template/ Border#PART_SelectedPipe">
+	<Style Selector="local|DragTabItem:selected /template/ Border#PART_SelectedPipe">
 		<Setter Property="IsVisible" Value="True" />
 	</Style>
 
 	<!-- PointerOver state -->
-	<Style Selector="local|ExTabItem:pointerover /template/ Border#PART_LayoutRoot">
+	<Style Selector="local|DragTabItem:pointerover /template/ Border#PART_LayoutRoot">
 		<Setter Property="Background" Value="{DynamicResource TabItemHeaderBackgroundUnselectedPointerOver}" />
 		<Setter Property="TextBlock.Foreground" Value="{DynamicResource TabItemHeaderForegroundUnselectedPointerOver}" />
 	</Style>
-    <Style Selector="local|ExTabItem:pointerover /template/ Path#PART_RightCorner">
+    <Style Selector="local|DragTabItem:pointerover /template/ Path#PART_RightCorner">
         <Setter Property="Fill" Value="{DynamicResource TabItemHeaderBackgroundUnselectedPointerOver}" />
     </Style>
-    <Style Selector="local|ExTabItem:pointerover /template/ Path#PART_LeftCorner">
+    <Style Selector="local|DragTabItem:pointerover /template/ Path#PART_LeftCorner">
         <Setter Property="Fill" Value="{DynamicResource TabItemHeaderBackgroundUnselectedPointerOver}" />
     </Style>
 
 	<!-- Selected PointerOver state -->
-	<Style Selector="local|ExTabItem:selected:pointerover /template/ Border#PART_LayoutRoot">
+	<Style Selector="local|DragTabItem:selected:pointerover /template/ Border#PART_LayoutRoot">
 		<Setter Property="Background" Value="{DynamicResource SelectedTabItemBackgroundBrush}" />
 		<Setter Property="TextBlock.Foreground" Value="{DynamicResource TabItemHeaderForegroundSelectedPointerOver}" />
 	</Style>
-    <Style Selector="local|ExTabItem:selected:pointerover /template/ Path#PART_RightCorner">
+    <Style Selector="local|DragTabItem:selected:pointerover /template/ Path#PART_RightCorner">
         <Setter Property="Fill" Value="{DynamicResource SelectedTabItemBackgroundBrush}" />
     </Style>
-    <Style Selector="local|ExTabItem:selected:pointerover /template/ Path#PART_LeftCorner">
+    <Style Selector="local|DragTabItem:selected:pointerover /template/ Path#PART_LeftCorner">
         <Setter Property="Fill" Value="{DynamicResource SelectedTabItemBackgroundBrush}" />
     </Style>
 
 	<!-- Disabled state -->
-	<Style Selector="local|ExTabItem:disabled /template/ Border#PART_LayoutRoot">
+	<Style Selector="local|DragTabItem:disabled /template/ Border#PART_LayoutRoot">
 		<Setter Property="Background" Value="{DynamicResource TabItemHeaderBackgroundDisabled}" />
 		<Setter Property="TextBlock.Foreground" Value="{DynamicResource TabItemHeaderForegroundDisabled}" />
 	</Style>
-    <Style Selector="local|ExTabItem:disabled /template/ Path#PART_RightCorner">
+    <Style Selector="local|DragTabItem:disabled /template/ Path#PART_RightCorner">
         <Setter Property="Fill" Value="{DynamicResource TabItemHeaderBackgroundDisabled}" />
     </Style>
-    <Style Selector="local|ExTabItem:disabled /template/ Path#PART_LeftCorner">
+    <Style Selector="local|DragTabItem:disabled /template/ Path#PART_LeftCorner">
         <Setter Property="Fill" Value="{DynamicResource TabItemHeaderBackgroundDisabled}" />
     </Style>
 
-	<Style Selector="local|ExTabItem[TabStripPlacement=Left] /template/ ContentPresenter#PART_ContentPresenter">
+	<Style Selector="local|DragTabItem[TabStripPlacement=Left] /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Margin" Value="8,0,0,0" />
 	</Style>
 
-	<Style Selector="local|ExTabItem[TabStripPlacement=Right] /template/ ContentPresenter#PART_ContentPresenter">
+	<Style Selector="local|DragTabItem[TabStripPlacement=Right] /template/ ContentPresenter#PART_ContentPresenter">
 		<Setter Property="Margin" Value="0,0,8,0" />
 	</Style>
 
-	<Style Selector="local|ExTabItem[TabStripPlacement=Right]">
+	<Style Selector="local|DragTabItem[TabStripPlacement=Right]">
 		<Setter Property="HorizontalContentAlignment" Value="Right" />
 	</Style>
 

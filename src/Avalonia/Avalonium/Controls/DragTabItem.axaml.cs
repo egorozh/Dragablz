@@ -5,17 +5,17 @@ using Avalonia.Media;
 
 namespace Avalonium;
 
-public class ExTabItem : TabItem
+public class DragTabItem : TabItem
 {
     private readonly IDisposable _sizeChanged;
     private Point _prevPoint;
     private bool _isDrag;
     private int _prevZIndex;
-    private IReadOnlyList<ExTabItem>? _items;
+    private IReadOnlyList<DragTabItem>? _items;
 
     protected TabsControl TabsControl => Parent as TabsControl ?? throw new Exception("Parent is not TabsControl");
 
-    public ExTabItem()
+    public DragTabItem()
     {
         _sizeChanged = BoundsProperty.Changed.Subscribe(BoundChangedHandler);
     }
@@ -25,7 +25,7 @@ public class ExTabItem : TabItem
         if (_isDrag)
             return;
 
-        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<ExTabItem>().ToList();
+        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<DragTabItem>().ToList();
 
         var prevWidth = 0.0;
 
@@ -45,7 +45,7 @@ public class ExTabItem : TabItem
         _prevPoint = e.GetPosition(TabsControl.ItemsPresenter.Panel);
         _prevZIndex = ZIndex;
         ZIndex = int.MaxValue;
-        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<ExTabItem>().ToList();
+        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<DragTabItem>().ToList();
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
@@ -59,7 +59,7 @@ public class ExTabItem : TabItem
 
         var (dX, dY) = point - _prevPoint;
 
-        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<ExTabItem>().ToList();
+        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<DragTabItem>().ToList();
 
         var prevWidth = 0.0;
 
@@ -109,7 +109,7 @@ public class ExTabItem : TabItem
                     {
                         this.TabIndex++;
                         TabsControl.ItemsPresenter.Panel.Children.Move(index, index - 1);
-                        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<ExTabItem>().ToList();
+                        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<DragTabItem>().ToList();
 
                         tabItem.TabIndex = index - 1;
                         tabItem.InitPosition();
@@ -138,7 +138,7 @@ public class ExTabItem : TabItem
 
     private static void BoundChangedHandler(AvaloniaPropertyChangedEventArgs<Rect> e)
     {
-        if (e.Sender is ExTabItem tabItem)
+        if (e.Sender is DragTabItem tabItem)
         {
             tabItem.InitPosition();
         }

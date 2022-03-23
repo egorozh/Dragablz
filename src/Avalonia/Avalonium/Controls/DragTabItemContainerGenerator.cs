@@ -8,9 +8,9 @@ using Avalonia.Reactive;
 
 namespace Avalonium;
 
-public class ExTabItemContainerGenerator : ItemContainerGenerator<ExTabItem>
+public class DragTabItemContainerGenerator : ItemContainerGenerator<DragTabItem>
 {
-    public ExTabItemContainerGenerator(TabControl owner)
+    public DragTabItemContainerGenerator(TabControl owner)
         : base(owner, ContentControl.ContentProperty, ContentControl.ContentTemplateProperty)
     {
         Owner = owner;
@@ -20,7 +20,7 @@ public class ExTabItemContainerGenerator : ItemContainerGenerator<ExTabItem>
 
     protected override IControl CreateContainer(object item)
     {
-        var tabItem = (ExTabItem)base.CreateContainer(item);
+        var tabItem = (DragTabItem)base.CreateContainer(item);
 
         var source = new OwnerBinding<Dock>(tabItem, TabControl.TabStripPlacementProperty);
         tabItem.Bind(TabItem.TabStripPlacementProperty, source);
@@ -58,12 +58,12 @@ public class ExTabItemContainerGenerator : ItemContainerGenerator<ExTabItem>
 
     private class OwnerBinding<T> : SingleSubscriberObservableBase<T>
     {
-        private readonly ExTabItem _item;
+        private readonly DragTabItem _item;
         private readonly StyledProperty<T> _ownerProperty;
         private IDisposable? _ownerSubscription;
         private IDisposable? _propertySubscription;
 
-        public OwnerBinding(ExTabItem item, StyledProperty<T> ownerProperty)
+        public OwnerBinding(DragTabItem item, StyledProperty<T> ownerProperty)
         {
             _item = item;
             _ownerProperty = ownerProperty;

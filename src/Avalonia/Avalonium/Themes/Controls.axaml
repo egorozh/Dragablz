@@ -2,6 +2,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <StyleInclude Source="avares://Avalonium/Controls/TabsControl.axaml" />
-    <StyleInclude Source="avares://Avalonium/Controls/ExTabItem.axaml" />
+    <StyleInclude Source="avares://Avalonium/Controls/DragTabItem.axaml" />
 
 </Styles>
