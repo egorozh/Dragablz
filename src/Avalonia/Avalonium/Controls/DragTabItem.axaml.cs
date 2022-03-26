@@ -97,7 +97,7 @@ public class DragTabItem : TabItem
                     //ZIndex = _prevZIndex;
 
                     tabItem.Background = Brushes.Red;
-                    break;
+                    // break;
                 }
                 else if (right >= center)
                 {

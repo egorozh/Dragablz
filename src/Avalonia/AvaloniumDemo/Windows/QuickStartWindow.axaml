@@ -15,7 +15,7 @@
             <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
                 <TextBlock HorizontalAlignment="Center"
                            VerticalAlignment="Center">
-                    Hello World
+                    Tab No. 1
                 </TextBlock>
             </Grid>
         </TabItem>
@@ -24,7 +24,7 @@
             <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
                 <TextBlock HorizontalAlignment="Center"
                            VerticalAlignment="Center">
-                    We Have Tearable Tabs!
+                    Tab No. 2
                 </TextBlock>
             </Grid>
 
@@ -45,7 +45,7 @@
             <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
                 <TextBlock Background="{DynamicResource SelectedTabItemBackgroundBrush}"
                            HorizontalAlignment="Center" VerticalAlignment="Center">
-                    I feel like an ice cold drink
+                    Tab No. 3
                 </TextBlock>
             </Grid>
 
@@ -54,7 +54,7 @@
             <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
                 <TextBlock HorizontalAlignment="Center"
                            VerticalAlignment="Center">
-                    We Have Tearable Tabs!
+                    Tab No. 4
                 </TextBlock>
             </Grid>
 
@@ -63,7 +63,7 @@
             <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
                 <TextBlock HorizontalAlignment="Center"
                            VerticalAlignment="Center">
-                    We Have Tearable Tabs!
+                    Tab No. 5
                 </TextBlock>
             </Grid>
 
@@ -72,7 +72,7 @@
             <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
                 <TextBlock HorizontalAlignment="Center"
                            VerticalAlignment="Center">
-                    We Have Tearable Tabs!
+                    Tab No. 6
                 </TextBlock>
             </Grid>
 
