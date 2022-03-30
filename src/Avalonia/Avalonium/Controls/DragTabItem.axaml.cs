@@ -1,7 +1,10 @@
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Controls.Primitives;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonium.Events;
 
 namespace Avalonium;
 
@@ -12,8 +15,35 @@ public class DragTabItem : TabItem
     private bool _isDrag;
     private int _prevZIndex;
     private IReadOnlyList<DragTabItem>? _items;
+    private Thumb _thumb;
 
     protected TabsControl TabsControl => Parent as TabsControl ?? throw new Exception("Parent is not TabsControl");
+
+    #region Internal Properties
+
+    internal Point MouseAtDragStart { get; set; }
+
+    #endregion
+
+    #region Routed Events
+
+    public static readonly RoutedEvent<DragablzDragStartedEventArgs> DragStarted =
+        RoutedEvent.Register<DragTabItem, DragablzDragStartedEventArgs>("DragStarted", RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<DragablzDragDeltaEventArgs> DragDelta =
+        RoutedEvent.Register<DragTabItem, DragablzDragDeltaEventArgs>("DragDelta", RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<DragablzDragCompletedEventArgs> DragCompleted =
+        RoutedEvent.Register<DragTabItem, DragablzDragCompletedEventArgs>("DragCompleted", RoutingStrategies.Bubble);
+
+    public static readonly RoutedEvent<DragablzDragDeltaEventArgs> PreviewDragDelta =
+        RoutedEvent.Register<DragTabItem, DragablzDragDeltaEventArgs>("PreviewDragDelta", RoutingStrategies.Tunnel);
+
+    #endregion
+
+    #region Events
+
+    #endregion
 
     public DragTabItem()
     {
@@ -38,102 +68,63 @@ public class DragTabItem : TabItem
         Canvas.SetTop(this, 0);
     }
 
+    protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
+    {
+        base.OnApplyTemplate(e);
+
+        var templateThumb = e.Find<Thumb>("PART_Thumb");
+
+        _thumb = templateThumb;
+        _thumb.DragStarted += ThumbOnDragStarted;
+        _thumb.DragDelta += ThumbOnDragDelta;
+        _thumb.DragCompleted += ThumbOnDragCompleted;
+    }
+
+    private void ThumbOnDragStarted(object? sender, VectorEventArgs args)
+    {
+        _isDrag = true;
+        MouseAtDragStart = new MouseDevice().GetPosition(this);
+        RaiseEvent(new DragablzDragStartedEventArgs(DragStarted, this, args));
+    }
+
+    private void ThumbOnDragDelta(object? sender, VectorEventArgs e)
+    {
+        var thumb = (Thumb)sender;
+
+        var previewEventArgs = new DragablzDragDeltaEventArgs(PreviewDragDelta, this, e);
+        RaiseEvent(previewEventArgs);
+        //if (previewEventArgs.Cancel)
+        //    thumb.CancelDrag();
+        if (!previewEventArgs.Handled)
+        {
+            var eventArgs = new DragablzDragDeltaEventArgs(DragDelta, this, e);
+            RaiseEvent(eventArgs);
+            //if (eventArgs.Cancel)
+            //    thumb.CancelDrag();
+        }
+    }
+
+    private void ThumbOnDragCompleted(object? sender, VectorEventArgs e)
+    {
+        _isDrag = false;
+        var args = new DragablzDragCompletedEventArgs(DragCompleted, this, e);
+        RaiseEvent(args);
+        MouseAtDragStart = new Point();
+    }
+
     protected override void OnPointerPressed(PointerPressedEventArgs e)
     {
         base.OnPointerPressed(e);
-        _isDrag = true;
-        _prevPoint = e.GetPosition(TabsControl.ItemsPresenter.Panel);
-        _prevZIndex = ZIndex;
-        ZIndex = int.MaxValue;
-        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<DragTabItem>().ToList();
     }
 
     protected override void OnPointerMoved(PointerEventArgs e)
     {
         base.OnPointerMoved(e);
-
-        if (!_isDrag)
-            return;
-
-        var point = e.GetPosition(TabsControl.ItemsPresenter.Panel);
-
-        var (dX, dY) = point - _prevPoint;
-
-        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<DragTabItem>().ToList();
-
-        var prevWidth = 0.0;
-
-        for (var i = 0; i < TabIndex; i++)
-        {
-            prevWidth += _items[i].Bounds.Width;
-        }
-
-        Canvas.SetLeft(this, prevWidth + dX - GetOffset());
-        //Canvas.SetTop(_tabItem, dY);
-
-        var left = Bounds.Left;
-        var right = Bounds.Right;
-
-        if (_items != null)
-            foreach (var tabItem in _items)
-            {
-                if (ReferenceEquals(tabItem, this))
-                    continue;
-
-                var center = tabItem.Bounds.Left + tabItem.Bounds.Width / 2;
-
-                if (left >= center)
-                {
-                    //var index = tabItem.TabIndex;
-
-                    ////tabItem turn on right
-                    //this.TabIndex--;
-                    //TabsControl.ItemsPresenter.Panel.Children.Move(index, index + 1);
-                    //_items = TabsControl.ItemsPresenter.Panel.Children.OfType<ExTabItem>().ToList();
-
-                    //tabItem.TabIndex = index + 1;
-                    //tabItem.InitPosition();
-                    //_isDrag = false;
-                    //ZIndex = _prevZIndex;
-
-                    tabItem.Background = Brushes.Red;
-                    // break;
-                }
-                else if (right >= center)
-                {
-                    //tabItem turn on left
-
-                    var index = tabItem.TabIndex;
-
-                    if (index > 0)
-                    {
-                        this.TabIndex++;
-                        TabsControl.ItemsPresenter.Panel.Children.Move(index, index - 1);
-                        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<DragTabItem>().ToList();
-
-                        tabItem.TabIndex = index - 1;
-                        tabItem.InitPosition();
-                        _isDrag = false;
-                        ZIndex = _prevZIndex;
-                        break;
-                    }
-
-                    tabItem.Background = Brushes.Blue;
-                }
-                else
-                {
-                    tabItem.Background = Background;
-                }
-            }
     }
 
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
-
-        _isDrag = false;
-        InitPosition();
-        ZIndex = _prevZIndex;
     }
 
     private static void BoundChangedHandler(AvaloniaPropertyChangedEventArgs<Rect> e)
@@ -144,7 +135,7 @@ public class DragTabItem : TabItem
         }
     }
 
-    private double GetOffset()
+    public double GetOffset()
     {
         double offset = TabsControl.AdjacentHeaderItemOffset;
 
