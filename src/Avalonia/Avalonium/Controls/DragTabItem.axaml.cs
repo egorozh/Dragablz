@@ -3,7 +3,6 @@ using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Media;
 using Avalonium.Events;
 
 namespace Avalonium;
@@ -25,6 +24,68 @@ public class DragTabItem : TabItem
 
     #endregion
 
+    #region Avalonia Properties
+
+    public static readonly StyledProperty<double> XProperty =
+        AvaloniaProperty.Register<DragTabItem, double>(nameof(X));
+
+    public static readonly StyledProperty<double> YProperty =
+        AvaloniaProperty.Register<DragTabItem, double>(nameof(Y));
+
+    public static readonly DirectProperty<DragTabItem, bool> IsDraggingProperty =
+        AvaloniaProperty.RegisterDirect<DragTabItem, bool>(nameof(IsDragging),
+            o => o.IsDragging, (o, v) => o.IsDragging = v);
+    
+    public static readonly DirectProperty<DragTabItem, int> LogicalIndexProperty =
+        AvaloniaProperty.RegisterDirect<DragTabItem, int>(nameof(LogicalIndex),
+            o => o.LogicalIndex, (o, v) => o.LogicalIndex = v);
+
+    public static readonly DirectProperty<DragTabItem, bool> IsSiblingDraggingProperty =
+        AvaloniaProperty.RegisterDirect<DragTabItem, bool>(nameof(IsSiblingDragging),
+            o => o.IsSiblingDragging, (o, v) => o.IsSiblingDragging = v);
+
+    #endregion
+
+    #region Public Properties
+
+    public double X
+    {
+        get => GetValue(XProperty);
+        set => SetValue(XProperty, value);
+    }
+
+    public double Y
+    {
+        get => GetValue(YProperty);
+        set => SetValue(YProperty, value);
+    }
+
+    public int LogicalIndex
+    {
+        get => GetValue(LogicalIndexProperty);
+        internal set => SetAndRaise(LogicalIndexProperty, ref _logicalIndex, value);
+    }
+
+    public bool IsSelected
+    {
+        get => GetValue(IsSelectedProperty);
+        set => SetValue(IsSelectedProperty, value);
+    }
+
+    public bool IsDragging
+    {
+        get => GetValue(IsDraggingProperty);
+        internal set => SetAndRaise(IsDraggingProperty, ref _isDragging, value);
+    }
+
+    public bool IsSiblingDragging
+    {
+        get => GetValue(IsSiblingDraggingProperty);
+        internal set => SetAndRaise(IsSiblingDraggingProperty, ref _isSiblingDragging, value);
+    }
+
+    #endregion
+
     #region Routed Events
 
     public static readonly RoutedEvent<DragablzDragStartedEventArgs> DragStarted =
@@ -39,6 +100,10 @@ public class DragTabItem : TabItem
     public static readonly RoutedEvent<DragablzDragDeltaEventArgs> PreviewDragDelta =
         RoutedEvent.Register<DragTabItem, DragablzDragDeltaEventArgs>("PreviewDragDelta", RoutingStrategies.Tunnel);
 
+    private int _logicalIndex;
+    private bool _isDragging;
+    private bool _isSiblingDragging;
+
     #endregion
 
     #region Events
@@ -47,27 +112,9 @@ public class DragTabItem : TabItem
 
     public DragTabItem()
     {
-        _sizeChanged = BoundsProperty.Changed.Subscribe(BoundChangedHandler);
+        
     }
-
-    public void InitPosition()
-    {
-        if (_isDrag)
-            return;
-
-        _items = TabsControl.ItemsPresenter.Panel.Children.OfType<DragTabItem>().ToList();
-
-        var prevWidth = 0.0;
-
-        for (var i = 0; i < TabIndex; i++)
-        {
-            prevWidth += _items[i].Bounds.Width;
-        }
-
-        Canvas.SetLeft(this, prevWidth - GetOffset());
-        Canvas.SetTop(this, 0);
-    }
-
+    
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
         base.OnApplyTemplate(e);
@@ -125,21 +172,5 @@ public class DragTabItem : TabItem
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
-    }
-
-    private static void BoundChangedHandler(AvaloniaPropertyChangedEventArgs<Rect> e)
-    {
-        if (e.Sender is DragTabItem tabItem)
-        {
-            tabItem.InitPosition();
-        }
-    }
-
-    public double GetOffset()
-    {
-        double offset = TabsControl.AdjacentHeaderItemOffset;
-
-        offset = TabIndex == 0 ? 0.0 : offset;
-        return offset * TabIndex;
     }
 }
