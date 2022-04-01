@@ -35,6 +35,8 @@
     </Style>
 
 	<Style Selector="local|DragTabItem">
+        <Setter Property="Canvas.Left" Value="{Binding $self.X}" />
+        <Setter Property="Canvas.Top" Value="{Binding $self.Y}" />
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="FontWeight" Value="{DynamicResource TabItemHeaderThemeFontWeight}" />
 		<Setter Property="Background" Value="Transparent" />

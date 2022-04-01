@@ -36,7 +36,6 @@ public abstract class StackOrganiser : IItemsOrganiser
             _setLocation = (item, coord) =>
             {
                 item.SetValue(DragTabItem.XProperty, coord);
-                item.SetValue(_canvasProperty, coord);
             };
         }
         else
@@ -46,7 +45,6 @@ public abstract class StackOrganiser : IItemsOrganiser
             _setLocation = (item, coord) =>
             {
                 item.SetValue(DragTabItem.YProperty, coord);
-                item.SetValue(_canvasProperty, coord);
             };
         }
     }
@@ -149,10 +147,10 @@ public abstract class StackOrganiser : IItemsOrganiser
         dragItem.ZIndex = int.MaxValue;
     }
 
-    public virtual void OrganiseOnDragCompleted(TabsItemsPresenter requestor, Size measureBounds,
-        IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
+    public virtual void OrganiseOnDragCompleted(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
     {
         if (siblingItems == null) throw new ArgumentNullException(nameof(siblingItems));
+
         var currentLocations = siblingItems
             .Select(GetLocationInfo)
             .Union(new[] {GetLocationInfo(dragItem)})

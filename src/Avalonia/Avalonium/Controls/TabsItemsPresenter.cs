@@ -1,6 +1,7 @@
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Presenters;
+using Avalonia.Layout;
 using Avalonia.Threading;
 using Avalonium.Events;
 using Avalonium.Organisers;
@@ -48,6 +49,9 @@ public class TabsItemsPresenter : ItemsPresenter
 
     public TabsItemsPresenter()
     {
+        HorizontalAlignment = HorizontalAlignment.Left;
+        VerticalAlignment = VerticalAlignment.Top;
+        
         AddHandler(DragTabItem.DragStarted, ItemDragStarted);
         AddHandler(DragTabItem.DragDelta, ItemDragDelta);
         AddHandler(DragTabItem.DragCompleted, ItemDragCompleted);
@@ -89,13 +93,13 @@ public class TabsItemsPresenter : ItemsPresenter
         ItemsOrganiser.Organise(this, maxConstraint, dragablzItems);
         var measure = ItemsOrganiser.Measure(this, this.Bounds, dragablzItems);
 
-        //ItemsPresenterWidth = measure.Width;
-        //ItemsPresenterHeight = measure.Height;
+        //Width = measure.Width;
+        //Height = measure.Height;
 
         var width = !double.IsInfinity(measure.Width) ? measure.Width : availableSize.Width;
         var height = !double.IsInfinity(measure.Height) ? measure.Height : availableSize.Height;
 
-        return new Size(width, height);
+        return new Size(width, 0);
     }
 
     #region Internal Methods
@@ -147,10 +151,7 @@ public class TabsItemsPresenter : ItemsPresenter
 
         currentItem.X = desiredLocation.X;
         currentItem.Y = desiredLocation.Y;
-
-        currentItem.SetValue(Canvas.LeftProperty, desiredLocation.X);
-        currentItem.SetValue(Canvas.TopProperty, desiredLocation.Y);
-
+        
         ItemsOrganiser.OrganiseOnDrag(this, this.Bounds, siblingsItems, eventArgs.DragablzItem);
 
         eventArgs.DragablzItem.BringIntoView();
@@ -160,7 +161,24 @@ public class TabsItemsPresenter : ItemsPresenter
 
     private void ItemDragCompleted(object? sender, DragablzDragCompletedEventArgs eventArgs)
     {
+        DragTabItem draggedItem = eventArgs.DragablzItem;
 
+        var dragablzItems = DragablzItems()
+            .Select(i =>
+            {
+                i.IsDragging = false;
+                i.IsSiblingDragging = false;
+                return i;
+            })
+            .ToList();
+        
+        var siblingsItems = dragablzItems.Except(new[] { draggedItem });
+
+        ItemsOrganiser.OrganiseOnDragCompleted(siblingsItems, draggedItem);
+        
+        //wowsers
+        //Dispatcher.BeginInvoke(new Action(InvalidateMeasure));
+        //Dispatcher.BeginInvoke(new Action(InvalidateMeasure), DispatcherPriority.Loaded);
 
         eventArgs.Handled = true;
     }

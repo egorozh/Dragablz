@@ -9,15 +9,8 @@ namespace Avalonium;
 
 public class DragTabItem : TabItem
 {
-    private readonly IDisposable _sizeChanged;
-    private Point _prevPoint;
-    private bool _isDrag;
-    private int _prevZIndex;
-    private IReadOnlyList<DragTabItem>? _items;
     private Thumb _thumb;
-
-    protected TabsControl TabsControl => Parent as TabsControl ?? throw new Exception("Parent is not TabsControl");
-
+    
     #region Internal Properties
 
     internal Point MouseAtDragStart { get; set; }
@@ -65,13 +58,7 @@ public class DragTabItem : TabItem
         get => GetValue(LogicalIndexProperty);
         internal set => SetAndRaise(LogicalIndexProperty, ref _logicalIndex, value);
     }
-
-    public bool IsSelected
-    {
-        get => GetValue(IsSelectedProperty);
-        set => SetValue(IsSelectedProperty, value);
-    }
-
+    
     public bool IsDragging
     {
         get => GetValue(IsDraggingProperty);
@@ -109,11 +96,6 @@ public class DragTabItem : TabItem
     #region Events
 
     #endregion
-
-    public DragTabItem()
-    {
-        
-    }
     
     protected override void OnApplyTemplate(TemplateAppliedEventArgs e)
     {
@@ -129,7 +111,6 @@ public class DragTabItem : TabItem
 
     private void ThumbOnDragStarted(object? sender, VectorEventArgs args)
     {
-        _isDrag = true;
         MouseAtDragStart = new MouseDevice().GetPosition(this);
         RaiseEvent(new DragablzDragStartedEventArgs(DragStarted, this, args));
     }
@@ -153,7 +134,6 @@ public class DragTabItem : TabItem
 
     private void ThumbOnDragCompleted(object? sender, VectorEventArgs e)
     {
-        _isDrag = false;
         var args = new DragablzDragCompletedEventArgs(DragCompleted, this, e);
         RaiseEvent(args);
         MouseAtDragStart = new Point();

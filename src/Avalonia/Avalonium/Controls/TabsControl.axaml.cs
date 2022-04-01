@@ -19,9 +19,10 @@ public class TabsControl : TabControl
     public TabsControl()
     {
         ItemsPanel = new FuncTemplate<IPanel>(() => new Canvas());
-        AddHandler(DragTabItem.DragStarted, ItemDragStarted, handledEventsToo:true);
+        AddHandler(DragTabItem.DragStarted, ItemDragStarted, handledEventsToo: true);
+        AddHandler(DragTabItem.DragCompleted, ItemDragCompleted, handledEventsToo: true);
     }
-
+    
     #endregion
 
     #region Protected Methods
@@ -43,6 +44,7 @@ public class TabsControl : TabControl
         if (e.Containers.FirstOrDefault() is {ContainerControl: DragTabItem exTabItem} info)
         {
             exTabItem.TabIndex = info.Index;
+            exTabItem.LogicalIndex = info.Index;
         }
     }
 
@@ -61,7 +63,7 @@ public class TabsControl : TabControl
         //_tabHeaderDragStartInformation = new TabHeaderDragStartInformation(e.DragablzItem, itemsControlOffset.X,
         //    itemsControlOffset.Y, e.DragStartedEventArgs.HorizontalOffset, e.DragStartedEventArgs.VerticalOffset);
 
-        var siblingsItems = ItemsPresenter.DragablzItems().Except(new[] { draggedItem });
+        var siblingsItems = ItemsPresenter.DragablzItems().Except(new[] {draggedItem});
 
         foreach (var otherItem in siblingsItems)
             otherItem.IsSelected = false;
@@ -74,20 +76,20 @@ public class TabsControl : TabControl
         {
             var item = itemInfo.Item;
 
-            if (item is TabItem tabItem)
+            if (itemInfo.Item is TabItem tabItem)
                 tabItem.IsSelected = true;
-            
+
             SelectedItem = item;
         }
 
         //e.DragablzItem.PartitionAtDragStart = InterTabController?.Partition;
-        //var item = _dragablzItemsControl.ItemContainerGenerator.ItemFromContainer(e.DragablzItem);
-        //var tabItem = item as TabItem;
-        //if (tabItem != null)
-        //    tabItem.IsSelected = true;
-        //SelectedItem = item;
 
         //if (ShouldDragWindow(sourceOfDragItemsControl))
         //    IsDraggingWindow = true;
+    }
+
+    private void ItemDragCompleted(object? sender, DragablzDragCompletedEventArgs e)
+    {
+
     }
 }
