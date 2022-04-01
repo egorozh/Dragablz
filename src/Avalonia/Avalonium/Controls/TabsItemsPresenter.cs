@@ -106,7 +106,7 @@ public class TabsItemsPresenter : ItemsPresenter
 
     internal IEnumerable<DragTabItem> DragablzItems()
     {
-        return Panel.Children.OfType<DragTabItem>().ToList();
+        return this.ItemContainerGenerator.Containers<DragTabItem>().ToList();  
     }
 
     #endregion

@@ -130,7 +130,7 @@ public abstract class StackOrganiser : IItemsOrganiser
         var currentLocations = siblingItems
             .Select(GetLocationInfo)
             .Union(new[] {GetLocationInfo(dragItem)})
-            .OrderBy(loc => loc.Item == dragItem ? loc.Start : _siblingItemLocationOnDragStart[loc.Item].Start);
+            .OrderBy(loc => loc.Item == dragItem ? loc.Start : _siblingItemLocationOnDragStart[loc.Item].Mid);
 
         var currentCoord = 0.0;
         var zIndex = int.MaxValue;
@@ -154,8 +154,8 @@ public abstract class StackOrganiser : IItemsOrganiser
         var currentLocations = siblingItems
             .Select(GetLocationInfo)
             .Union(new[] {GetLocationInfo(dragItem)})
-            .OrderBy(loc => loc.Item == dragItem ? loc.Start : _siblingItemLocationOnDragStart[loc.Item].Start);
-
+            .OrderBy(loc => loc.Item == dragItem ? loc.Start : _siblingItemLocationOnDragStart[loc.Item].Mid);
+//todo fix
         var currentCoord = 0.0;
         var z = int.MaxValue;
         var logicalIndex = 0;
@@ -208,11 +208,11 @@ public abstract class StackOrganiser : IItemsOrganiser
 
             if (_orientation == Orientation.Horizontal)
             {
+                height = Math.Max(height,
+                    !loaded ? dragTabItem.DesiredSize.Height : dragTabItem.Bounds.Height);
                 width += !loaded ? dragTabItem.DesiredSize.Width : dragTabItem.Bounds.Width;
                 if (!isFirst)
                     width += _itemOffset;
-                height = Math.Max(height,
-                    !loaded ? dragTabItem.DesiredSize.Height : dragTabItem.Bounds.Height);
             }
             else
             {

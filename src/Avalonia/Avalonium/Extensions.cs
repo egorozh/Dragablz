@@ -1,4 +1,5 @@
 using Avalonia.Controls;
+using Avalonia.Controls.Generators;
 using Avalonia.Controls.Primitives;
 
 namespace Avalonium;
@@ -13,5 +14,15 @@ internal static class Extensions
             throw new ElementNotFoundOnStyleException(elementName);
 
         return element;
+    }
+    
+    public static IEnumerable<TContainer> Containers<TContainer>(this IItemContainerGenerator itemGen)
+        where TContainer : class
+    {
+        foreach (ItemContainerInfo? info in itemGen.Containers)
+        {
+            if (info.ContainerControl is TContainer c)
+                yield return c;
+        }
     }
 }
