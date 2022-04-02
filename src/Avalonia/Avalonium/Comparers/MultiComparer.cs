@@ -1,4 +1,4 @@
-﻿namespace Avalonium;
+﻿namespace Avalonium.Comparers;
 
 internal class MultiComparer<TObject> : IComparer<TObject>
 {

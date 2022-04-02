@@ -4,6 +4,7 @@ using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Layout;
 using Avalonia.Styling;
+using Avalonium.Comparers;
 
 namespace Avalonium.Organisers;
 
@@ -91,15 +92,18 @@ public abstract class StackOrganiser : IItemsOrganiser
 
         var currentCoord = 0.0;
         var zIndex = int.MaxValue;
+
         foreach (var location in currentLocations)
         {
-            if (!Equals(location.Item, dragItem))
+            var item = location.Item;
+
+            if (!Equals(item, dragItem))
             {
-                SendToLocation(location.Item, currentCoord);
-                location.Item.ZIndex = --zIndex;
+                SendToLocation(item, currentCoord);
+                item.ZIndex = --zIndex;
             }
 
-            currentCoord += _getDesiredSize(location.Item) + _itemOffset;
+            currentCoord += _getDesiredSize(item) + _itemOffset;
         }
 
         dragItem.ZIndex = int.MaxValue;
@@ -114,12 +118,15 @@ public abstract class StackOrganiser : IItemsOrganiser
         var currentCoord = 0.0;
         var z = int.MaxValue;
         var logicalIndex = 0;
+
         foreach (var location in currentLocations)
         {
-            _setLocation(location.Item, currentCoord);
-            currentCoord += _getDesiredSize(location.Item) + _itemOffset;
-            location.Item.ZIndex = --z;
-            location.Item.LogicalIndex = logicalIndex++;
+            var item = location.Item;
+
+            _setLocation(item, currentCoord);
+            currentCoord += _getDesiredSize(item) + _itemOffset;
+            item.ZIndex = --z;
+            item.LogicalIndex = logicalIndex++;
         }
 
         dragItem.ZIndex = int.MaxValue;

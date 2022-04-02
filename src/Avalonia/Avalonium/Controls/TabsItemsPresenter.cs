@@ -87,7 +87,7 @@ public class TabsItemsPresenter : ItemsPresenter
         //    return LockedMeasure.Value;
         //}
 
-        var dragablzItems = DragablzItems().ToList();
+        var dragablzItems = DragablzItems();
         var maxConstraint = new Size(double.PositiveInfinity, double.PositiveInfinity);
 
         ItemsOrganiser.Organise(maxConstraint, dragablzItems);
@@ -104,7 +104,7 @@ public class TabsItemsPresenter : ItemsPresenter
 
     #region Internal Methods
 
-    internal IEnumerable<DragTabItem> DragablzItems()
+    internal IReadOnlyList<DragTabItem> DragablzItems()
     {
         return this.ItemContainerGenerator.Containers<DragTabItem>().ToList();  
     }
@@ -175,6 +175,8 @@ public class TabsItemsPresenter : ItemsPresenter
         ItemsOrganiser.OrganiseOnDragCompleted(siblingsItems, draggedItem);
         
         //wowsers
+        Dispatcher.UIThread.Post(InvalidateMeasure);
+        Dispatcher.UIThread.Post(InvalidateMeasure, DispatcherPriority.Loaded);
         //Dispatcher.BeginInvoke(new Action(InvalidateMeasure));
         //Dispatcher.BeginInvoke(new Action(InvalidateMeasure), DispatcherPriority.Loaded);
 

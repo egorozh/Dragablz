@@ -1,6 +1,7 @@
 using Avalonia.Controls;
 using Avalonia.Controls.Generators;
 using Avalonia.Controls.Primitives;
+using Avalonium.Exceptions;
 
 namespace Avalonium;
 
