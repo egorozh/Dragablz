@@ -138,9 +138,7 @@ public class TabsItemsPresenter : ItemsPresenter
             return;
         }
 
-        desiredLocation = ItemsOrganiser.ConstrainLocation(this, this.Bounds,
-            new Point(currentItem.X, currentItem.Y),
-            eventArgs.DragablzItem.Bounds, desiredLocation, eventArgs.DragablzItem.DesiredSize);
+        desiredLocation = ItemsOrganiser.ConstrainLocation(this, this.Bounds, desiredLocation);
 
         var siblingsItems = DragablzItems().Except(new[] { currentItem }).ToList();
 

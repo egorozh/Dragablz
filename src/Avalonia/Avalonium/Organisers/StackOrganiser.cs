@@ -82,7 +82,7 @@ public abstract class StackOrganiser : IItemsOrganiser
         foreach (var newItem in items)
         {
             newItem.ZIndex = newItem.IsSelected ? int.MaxValue : --z;
-            SetLocation(newItem, currentCoord);
+            _setLocation(newItem, currentCoord);
             newItem.LogicalIndex = logicalIndex++;
             newItem.Measure(measureBounds);
             var desiredSize = _getDesiredSize(newItem);
@@ -133,7 +133,7 @@ public abstract class StackOrganiser : IItemsOrganiser
         var logicalIndex = 0;
         foreach (var location in currentLocations)
         {
-            SetLocation(location.Item, currentCoord);
+            _setLocation(location.Item, currentCoord);
             currentCoord += _getDesiredSize(location.Item) + _itemOffset;
             location.Item.ZIndex = --z;
             location.Item.LogicalIndex = logicalIndex++;
@@ -141,11 +141,8 @@ public abstract class StackOrganiser : IItemsOrganiser
 
         dragItem.ZIndex = int.MaxValue;
     }
-
     
-
-    public virtual Point ConstrainLocation(TabsItemsPresenter requestor, Rect measureBounds, Point itemCurrentLocation,
-        Rect itemCurrentSize, Point itemDesiredLocation, Size itemDesiredSize)
+    public virtual Point ConstrainLocation(TabsItemsPresenter requestor, Rect measureBounds, Point itemDesiredLocation)
     {
         var fixedItems = requestor.FixedItemCount;
         var lowerBound = fixedItems == 0
@@ -230,12 +227,7 @@ public abstract class StackOrganiser : IItemsOrganiser
 
         return currentLocations;
     }
-
-    private void SetLocation(DragTabItem DragTabItem, double location)
-    {                     
-        _setLocation(DragTabItem, location);
-    }
-        
+    
     private void SendToLocation(DragTabItem dragTabItem, double location)
     {
         if (Math.Abs(_getLocation(dragTabItem) - location) < 1.0

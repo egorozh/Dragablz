@@ -39,7 +39,7 @@
         <Setter Property="Canvas.Top" Value="{Binding $self.Y}" />
 		<Setter Property="FontSize" Value="12" />
 		<Setter Property="FontWeight" Value="{DynamicResource TabItemHeaderThemeFontWeight}" />
-		<Setter Property="Background" Value="Transparent" />
+		<Setter Property="Background" Value="{DynamicResource TabItemBackgroundBrush}" />
 		<Setter Property="Foreground" Value="{DynamicResource TabItemHeaderForegroundUnselected}" />
 		<Setter Property="Padding" Value="{DynamicResource TabItemHeaderMargin}" />
 		<Setter Property="Margin" Value="0" />
@@ -92,15 +92,13 @@
 						</Grid>
 					</Border>
 
-					<Border Grid.Column="1"
-                            Name="RightBorder"
-                            BorderBrush="Red"
-                            BorderThickness="1"
-                            IsVisible="True"
-                            Height="26"
+                    <Border Grid.Column="2"
+                            Name="PART_RightBorder"
+                            Background="#777777"
+                            Height="20"
                             Width="1"
                             VerticalAlignment="Center"
-                            HorizontalAlignment="Right" />
+                            HorizontalAlignment="Left" />
 
 					<Path Grid.Column="2"
                           Stretch="Uniform"
@@ -120,6 +118,7 @@
 							</PathGeometry>
 						</Path.Data>
 					</Path>
+
 				</Grid>
 
 			</ControlTemplate>
@@ -131,23 +130,17 @@
 		<Setter Property="Background" Value="{Binding $parent[TabItem].Background}" />
 	</Style>
 
-	<Style Selector="local|DragTabItem /template/ Border#PART_SelectedPipe">
-		<Setter Property="IsVisible" Value="False" />
-		<Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
-	</Style>
-
-	<!-- Selected state -->
-	<!--  We don't use selector to PART_LayoutRoot, so developer can override selected item background with TabStripItem.Background  -->
-	<Style Selector="local|DragTabItem:selected">
+    <!-- Selected state -->
+    <Style Selector="local|DragTabItem:selected">
 		<Setter Property="Background" Value="{DynamicResource SelectedTabItemBackgroundBrush}" />
 		<Setter Property="TextBlock.Foreground" Value="{DynamicResource TabItemHeaderForegroundSelected}" />
 	</Style>
 
-	<Style Selector="local|DragTabItem:selected /template/ Border#PART_SelectedPipe">
-		<Setter Property="IsVisible" Value="True" />
-	</Style>
+    <Style Selector="local|DragTabItem:selected /template/ Border#PART_RightBorder">
+        <Setter Property="IsVisible" Value="False" />
+    </Style>
 
-	<!-- PointerOver state -->
+    <!-- PointerOver state -->
 	<Style Selector="local|DragTabItem:pointerover /template/ Border#PART_LayoutRoot">
 		<Setter Property="Background" Value="{DynamicResource TabItemHeaderBackgroundUnselectedPointerOver}" />
 		<Setter Property="TextBlock.Foreground" Value="{DynamicResource TabItemHeaderForegroundUnselectedPointerOver}" />
@@ -157,6 +150,9 @@
     </Style>
     <Style Selector="local|DragTabItem:pointerover /template/ Path#PART_LeftCorner">
         <Setter Property="Fill" Value="{DynamicResource TabItemHeaderBackgroundUnselectedPointerOver}" />
+    </Style>
+    <Style Selector="local|DragTabItem:pointerover /template/ Border#PART_RightBorder">
+        <Setter Property="IsVisible" Value="False" />
     </Style>
 
 	<!-- Selected PointerOver state -->
@@ -169,6 +165,9 @@
     </Style>
     <Style Selector="local|DragTabItem:selected:pointerover /template/ Path#PART_LeftCorner">
         <Setter Property="Fill" Value="{DynamicResource SelectedTabItemBackgroundBrush}" />
+    </Style>
+    <Style Selector="local|DragTabItem:selected:pointerover /template/ Border#PART_RightBorder">
+        <Setter Property="IsVisible" Value="False" />
     </Style>
 
 	<!-- Disabled state -->

@@ -3,6 +3,8 @@
 
     <Styles.Resources>
         <SolidColorBrush x:Key="SelectedTabItemBackgroundBrush" Color="#3B3B3B" />
+        <SolidColorBrush x:Key="TabItemHeaderBackgroundUnselectedPointerOver" Color="#363636" />
+        <SolidColorBrush x:Key="TabItemBackgroundBrush" Color="#2E2E2E" />
 	</Styles.Resources>
 
 	<StyleInclude Source="avares://Avalonium/Themes/Controls.axaml" />

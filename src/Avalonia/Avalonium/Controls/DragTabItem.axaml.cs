@@ -93,7 +93,9 @@ public class DragTabItem : TabItem
 
     public static readonly RoutedEvent<DragablzDragDeltaEventArgs> PreviewDragDelta =
         RoutedEvent.Register<DragTabItem, DragablzDragDeltaEventArgs>("PreviewDragDelta", RoutingStrategies.Tunnel);
-    
+
+    private int _prevZindex;
+
     #endregion
 
     #region Events
@@ -155,5 +157,20 @@ public class DragTabItem : TabItem
     protected override void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
+    }
+
+    protected override void OnPointerEnter(PointerEventArgs e)
+    {
+        base.OnPointerEnter(e);
+
+        _prevZindex = ZIndex;
+        ZIndex = int.MaxValue;
+    }
+
+    protected override void OnPointerLeave(PointerEventArgs e)
+    {
+        base.OnPointerLeave(e);
+
+        ZIndex = _prevZindex;
     }
 }
