@@ -286,8 +286,7 @@ public abstract class StackOrganiser : IItemsOrganiser
 
         return new LocationInfo(item, startLocation, midLocation, endLocation);
     }
-
-
+    
     #endregion
     
     #region Private Structs

@@ -122,7 +122,7 @@ public class TabsItemsPresenter : ItemsPresenter
 
         eventArgs.Handled = true;
 
-        //Dispatcher.UIThread.Post(InvalidateMeasure, DispatcherPriority.Loaded);
+        Dispatcher.UIThread.Post(InvalidateMeasure, DispatcherPriority.Loaded);
     }
 
     private void ItemDragDelta(object? sender, DragablzDragDeltaEventArgs eventArgs)
@@ -178,7 +178,7 @@ public class TabsItemsPresenter : ItemsPresenter
         
         //wowsers
         Dispatcher.UIThread.Post(InvalidateMeasure);
-        Dispatcher.UIThread.Post(InvalidateMeasure, DispatcherPriority.Loaded);
+        //Dispatcher.UIThread.Post(InvalidateMeasure, DispatcherPriority.Loaded);
         //Dispatcher.BeginInvoke(new Action(InvalidateMeasure));
         //Dispatcher.BeginInvoke(new Action(InvalidateMeasure), DispatcherPriority.Loaded);
 
