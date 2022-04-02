@@ -6,7 +6,9 @@
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
         x:Class="AvaloniumDemo.Windows.QuickStartWindow"
 
-        Title="Quick Start Window" Height="341" Width="617">
+        Title="Quick Start Window" 
+        Height="720" Width="1024"
+        WindowStartupLocation="CenterScreen">
 
 
     <avalonium:TabsControl Margin="8">

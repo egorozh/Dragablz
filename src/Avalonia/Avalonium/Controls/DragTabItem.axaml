@@ -45,6 +45,7 @@
 		<Setter Property="Margin" Value="0" />
 	    <Setter Property="MinHeight" Value="32" />
 		<Setter Property="Height" Value="32" />
+		<Setter Property="Width" Value="160" />
 		<Setter Property="VerticalContentAlignment" Value="Center" />
 		<Setter Property="CornerRadius" Value="4 4 0 0" />
 		<Setter Property="Template">

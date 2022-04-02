@@ -9,7 +9,14 @@ namespace Avalonium;
 
 public class DragTabItem : TabItem
 {
+    #region Private Fields
+
     private Thumb _thumb;
+    private int _logicalIndex;
+    private bool _isDragging;
+    private bool _isSiblingDragging;
+
+    #endregion
     
     #region Internal Properties
 
@@ -55,19 +62,19 @@ public class DragTabItem : TabItem
 
     public int LogicalIndex
     {
-        get => GetValue(LogicalIndexProperty);
+        get => _logicalIndex;
         internal set => SetAndRaise(LogicalIndexProperty, ref _logicalIndex, value);
     }
     
     public bool IsDragging
     {
-        get => GetValue(IsDraggingProperty);
+        get => _isDragging;
         internal set => SetAndRaise(IsDraggingProperty, ref _isDragging, value);
     }
 
     public bool IsSiblingDragging
     {
-        get => GetValue(IsSiblingDraggingProperty);
+        get => _isSiblingDragging;
         internal set => SetAndRaise(IsSiblingDraggingProperty, ref _isSiblingDragging, value);
     }
 
@@ -86,11 +93,7 @@ public class DragTabItem : TabItem
 
     public static readonly RoutedEvent<DragablzDragDeltaEventArgs> PreviewDragDelta =
         RoutedEvent.Register<DragTabItem, DragablzDragDeltaEventArgs>("PreviewDragDelta", RoutingStrategies.Tunnel);
-
-    private int _logicalIndex;
-    private bool _isDragging;
-    private bool _isSiblingDragging;
-
+    
     #endregion
 
     #region Events

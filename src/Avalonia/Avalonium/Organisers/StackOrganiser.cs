@@ -17,6 +17,7 @@ public abstract class StackOrganiser : IItemsOrganiser
 
     private readonly Dictionary<DragTabItem, double> _activeStoryboardTargetLocations = new();
     private IDictionary<DragTabItem, LocationInfo>? _siblingItemLocationOnDragStart;
+    private LocationInfo _dragItemLocationOnDragStart;
 
     #endregion
 
@@ -51,52 +52,29 @@ public abstract class StackOrganiser : IItemsOrganiser
 
     #endregion
     
-    #region LocationInfo
-
-    private class LocationInfo
-    {
-        public LocationInfo(DragTabItem item, double start, double mid, double end)
-        {
-            Item = item;
-            Start = start;
-            Mid = mid;
-            End = end;
-        }
-
-        public double Start { get; }
-
-        public double Mid { get; }
-
-        public double End { get; }
-
-        public DragTabItem Item { get; }
-    }
-
-    #endregion
-    
-    public virtual void Organise(TabsItemsPresenter requestor, Size measureBounds, IEnumerable<DragTabItem> items)
+    public virtual void Organise(Size measureBounds, IEnumerable<DragTabItem> items)
     {
         if (items == null) throw new ArgumentNullException(nameof(items));
 
-        OrganiseInternal(
-            requestor, 
-            measureBounds,
-            items.Select((di, idx) => new Tuple<int, DragTabItem>(idx, di))
-                .OrderBy(tuple => tuple,
-                    MultiComparer<Tuple<int, DragTabItem>>.Ascending(tuple => _getLocation(tuple.Item2))
-                        .ThenAscending(tuple => tuple.Item1))
-                .Select(tuple => tuple.Item2));            
+        var sortedItems = items
+            .Select((di, idx) => new Tuple<int, DragTabItem>(idx, di))
+            .OrderBy(tuple => tuple,
+                MultiComparer<Tuple<int, DragTabItem>>
+                    .Ascending(tuple => _getLocation(tuple.Item2))
+                    .ThenAscending(tuple => tuple.Item1))
+            .Select(tuple => tuple.Item2);
+
+        OrganiseInternal(measureBounds, sortedItems);            
     }
 
-    public virtual void Organise(TabsItemsPresenter requestor, Size measureBounds, IOrderedEnumerable<DragTabItem> items)
+    public virtual void Organise(Size measureBounds, IOrderedEnumerable<DragTabItem> items)
     {
         if (items == null) throw new ArgumentNullException(nameof(items));
 
-        OrganiseInternal(requestor, measureBounds, items);
+        OrganiseInternal(measureBounds, items);
     }
 
-    private void OrganiseInternal(TabsItemsPresenter requestor, Size measureBounds,
-        IEnumerable<DragTabItem> items)
+    private void OrganiseInternal(Size measureBounds, IEnumerable<DragTabItem> items)
     {
         var currentCoord = 0.0;
         var z = int.MaxValue;
@@ -113,24 +91,21 @@ public abstract class StackOrganiser : IItemsOrganiser
         }
     }
     
-    public virtual void OrganiseOnDragStarted(TabsItemsPresenter requestor, Rect measureBounds, IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
+    public virtual void OrganiseOnDragStarted(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
     {
         if (siblingItems == null) throw new ArgumentNullException(nameof(siblingItems));
         if (dragItem == null) throw new ArgumentNullException(nameof(dragItem));
 
+        _dragItemLocationOnDragStart = GetLocationInfo(dragItem);
         _siblingItemLocationOnDragStart = siblingItems.Select(GetLocationInfo).ToDictionary(loc => loc.Item);
     }
 
-    public virtual void OrganiseOnDrag(TabsItemsPresenter requestor, Rect measureBounds,
-        IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
+    public virtual void OrganiseOnDrag(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
     {
         if (siblingItems == null) throw new ArgumentNullException(nameof(siblingItems));
         if (dragItem == null) throw new ArgumentNullException(nameof(dragItem));
 
-        var currentLocations = siblingItems
-            .Select(GetLocationInfo)
-            .Union(new[] {GetLocationInfo(dragItem)})
-            .OrderBy(loc => loc.Item == dragItem ? loc.Start : _siblingItemLocationOnDragStart[loc.Item].Mid);
+        var currentLocations = GetLocations(siblingItems, dragItem);
 
         var currentCoord = 0.0;
         var zIndex = int.MaxValue;
@@ -151,11 +126,8 @@ public abstract class StackOrganiser : IItemsOrganiser
     {
         if (siblingItems == null) throw new ArgumentNullException(nameof(siblingItems));
 
-        var currentLocations = siblingItems
-            .Select(GetLocationInfo)
-            .Union(new[] {GetLocationInfo(dragItem)})
-            .OrderBy(loc => loc.Item == dragItem ? loc.Start : _siblingItemLocationOnDragStart[loc.Item].Mid);
-//todo fix
+        var currentLocations = GetLocations(siblingItems, dragItem);
+
         var currentCoord = 0.0;
         var z = int.MaxValue;
         var logicalIndex = 0;
@@ -169,6 +141,8 @@ public abstract class StackOrganiser : IItemsOrganiser
 
         dragItem.ZIndex = int.MaxValue;
     }
+
+    
 
     public virtual Point ConstrainLocation(TabsItemsPresenter requestor, Rect measureBounds, Point itemCurrentLocation,
         Rect itemCurrentSize, Point itemDesiredLocation, Size itemDesiredSize)
@@ -205,6 +179,7 @@ public abstract class StackOrganiser : IItemsOrganiser
 
             //var loaded = dragTabItem.IsLoaded
             var loaded = true;
+            
 
             if (_orientation == Orientation.Horizontal)
             {
@@ -234,6 +209,26 @@ public abstract class StackOrganiser : IItemsOrganiser
         if (items == null) throw new ArgumentNullException(nameof(items));
 
         return items.OrderBy(i => GetLocationInfo(i).Start);
+    }
+
+    private IEnumerable<LocationInfo> GetLocations(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
+    {
+        double OrderSelector(LocationInfo loc)
+        {
+            if (Equals(loc.Item, dragItem))
+            {
+                return loc.Start > _dragItemLocationOnDragStart.Start ? loc.End : loc.Start;
+            }
+
+            return _siblingItemLocationOnDragStart[loc.Item].Mid;
+        }
+
+        var currentLocations = siblingItems
+            .Select(GetLocationInfo)
+            .Union(new[] { GetLocationInfo(dragItem) })
+            .OrderBy(OrderSelector);
+
+        return currentLocations;
     }
 
     private void SetLocation(DragTabItem DragTabItem, double location)
@@ -285,4 +280,10 @@ public abstract class StackOrganiser : IItemsOrganiser
 
         return new LocationInfo(item, startLocation, midLocation, endLocation);
     }
+
+    #region Private Structs
+
+    private readonly record struct LocationInfo(DragTabItem Item, double Start, double Mid, double End);
+
+    #endregion
 }

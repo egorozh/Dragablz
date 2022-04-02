@@ -90,7 +90,7 @@ public class TabsItemsPresenter : ItemsPresenter
         var dragablzItems = DragablzItems().ToList();
         var maxConstraint = new Size(double.PositiveInfinity, double.PositiveInfinity);
 
-        ItemsOrganiser.Organise(this, maxConstraint, dragablzItems);
+        ItemsOrganiser.Organise(maxConstraint, dragablzItems);
         var measure = ItemsOrganiser.Measure(this, this.Bounds, dragablzItems);
 
         //Width = measure.Width;
@@ -116,7 +116,7 @@ public class TabsItemsPresenter : ItemsPresenter
     private void ItemDragStarted(object? sender, DragablzDragStartedEventArgs eventArgs)
     {
         var siblingItems = DragablzItems().Except(new[] { eventArgs.DragablzItem }).ToList();
-        ItemsOrganiser.OrganiseOnDragStarted(this, Bounds, siblingItems, eventArgs.DragablzItem);
+        ItemsOrganiser.OrganiseOnDragStarted(siblingItems, eventArgs.DragablzItem);
 
         eventArgs.Handled = true;
 
@@ -152,7 +152,7 @@ public class TabsItemsPresenter : ItemsPresenter
         currentItem.X = desiredLocation.X;
         currentItem.Y = desiredLocation.Y;
         
-        ItemsOrganiser.OrganiseOnDrag(this, this.Bounds, siblingsItems, eventArgs.DragablzItem);
+        ItemsOrganiser.OrganiseOnDrag(siblingsItems, eventArgs.DragablzItem);
 
         eventArgs.DragablzItem.BringIntoView();
 
