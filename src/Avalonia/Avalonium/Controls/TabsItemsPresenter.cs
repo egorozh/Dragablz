@@ -115,18 +115,20 @@ public class TabsItemsPresenter : ItemsPresenter
 
     private void ItemDragStarted(object? sender, DragablzDragStartedEventArgs eventArgs)
     {
-        var siblingItems = DragablzItems().Except(new[] { eventArgs.DragablzItem }).ToList();
-        ItemsOrganiser.OrganiseOnDragStarted(siblingItems, eventArgs.DragablzItem);
+        DragTabItem currentItem = eventArgs.DragablzItem;
+        
+        var siblingItems = DragablzItems().Except(new[] { currentItem }).ToList();
+        ItemsOrganiser.OrganiseOnDragStarted(siblingItems, currentItem);
 
         eventArgs.Handled = true;
 
-        Dispatcher.UIThread.Post(InvalidateMeasure, DispatcherPriority.Loaded);
+        //Dispatcher.UIThread.Post(InvalidateMeasure, DispatcherPriority.Loaded);
     }
 
     private void ItemDragDelta(object? sender, DragablzDragDeltaEventArgs eventArgs)
     {
         DragTabItem currentItem = eventArgs.DragablzItem;
-
+        
         var desiredLocation = new Point(
             currentItem.X + eventArgs.DragDeltaEventArgs.Vector.X,
             currentItem.Y + eventArgs.DragDeltaEventArgs.Vector.Y);
@@ -150,9 +152,9 @@ public class TabsItemsPresenter : ItemsPresenter
         currentItem.X = desiredLocation.X;
         currentItem.Y = desiredLocation.Y;
         
-        ItemsOrganiser.OrganiseOnDrag(siblingsItems, eventArgs.DragablzItem);
+        ItemsOrganiser.OrganiseOnDrag(siblingsItems, currentItem);
 
-        eventArgs.DragablzItem.BringIntoView();
+        currentItem.BringIntoView();
 
         eventArgs.Handled = true;
     }

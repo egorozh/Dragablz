@@ -102,7 +102,7 @@ public abstract class StackOrganiser : IItemsOrganiser
                 SendToLocation(item, currentCoord);
                 item.ZIndex = --zIndex;
             }
-
+            
             currentCoord += _getDesiredSize(item) + _itemOffset;
         }
 
@@ -141,12 +141,10 @@ public abstract class StackOrganiser : IItemsOrganiser
                 .Take(fixedItems)
                 .Last()).End + _itemOffset - 1;
 
-        var x = _orientation == Orientation.Vertical
-            ? 0
+        var x = _orientation == Orientation.Vertical ? 0
             : Math.Min(Math.Max(lowerBound, itemDesiredLocation.X), (measureBounds.Width) + 1);
 
-        var y = _orientation == Orientation.Horizontal
-            ? 0
+        var y = _orientation == Orientation.Horizontal ? 0
             : Math.Min(Math.Max(lowerBound, itemDesiredLocation.Y), (measureBounds.Height) + 1);
 
         return new Point(x, y);
@@ -257,7 +255,7 @@ public abstract class StackOrganiser : IItemsOrganiser
             Easing = new CubicEaseOut(),
             Duration = TimeSpan.FromMilliseconds(200),
             PlaybackDirection = PlaybackDirection.Normal,
-            FillMode = FillMode.Forward,
+            FillMode = FillMode.None,
             Children =
             {
                 new KeyFrame
@@ -271,10 +269,11 @@ public abstract class StackOrganiser : IItemsOrganiser
             }
         };
 
-        await animation.RunAsync(dragTabItem, null);
-
+        await animation.RunAsync(dragTabItem,null);
+       
         _setLocation(dragTabItem, location);
         _activeStoryboardTargetLocations.Remove(dragTabItem);
+        
     }
 
     private LocationInfo GetLocationInfo(DragTabItem item)

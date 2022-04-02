@@ -32,25 +32,13 @@
 
         </TabItem>
 
-        <TabItem>
-            <!-- with context menu -->
-            <TabItem.Header>
-                <Grid>
-                    <Grid.ContextMenu>
-                        <ContextMenu>
-                            <MenuItem />
-                        </ContextMenu>
-                    </Grid.ContextMenu>
-                    <TextBlock>Tab No. 3</TextBlock>
-                </Grid>
-            </TabItem.Header>
+        <TabItem Header="Tab No. 3">
             <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">
                 <TextBlock Background="{DynamicResource SelectedTabItemBackgroundBrush}"
                            HorizontalAlignment="Center" VerticalAlignment="Center">
                     Tab No. 3
                 </TextBlock>
             </Grid>
-
         </TabItem>
         <TabItem Header="Tab No. 4">
             <Grid Background="{DynamicResource SelectedTabItemBackgroundBrush}">

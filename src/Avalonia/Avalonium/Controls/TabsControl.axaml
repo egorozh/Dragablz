@@ -44,12 +44,12 @@
                                                   ItemTemplate="{TemplateBinding ItemTemplate}"
                                                   DockPanel.Dock="{TemplateBinding TabStripPlacement}" />
                         <ContentPresenter Name="PART_SelectedContentHost"
-                                          Background="red"
                                           Margin="{TemplateBinding Padding}"
                                           HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
                                           VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
                                           Content="{TemplateBinding SelectedContent}"
                                           ContentTemplate="{TemplateBinding SelectedContentTemplate}" />
+
                     </DockPanel>
                 </Border>
             </ControlTemplate>

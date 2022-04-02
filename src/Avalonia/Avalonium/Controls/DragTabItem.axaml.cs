@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.Primitives;
@@ -122,8 +123,6 @@ public class DragTabItem : TabItem
 
     private void ThumbOnDragDelta(object? sender, VectorEventArgs e)
     {
-        var thumb = (Thumb)sender;
-
         var previewEventArgs = new DragablzDragDeltaEventArgs(PreviewDragDelta, this, e);
         RaiseEvent(previewEventArgs);
         //if (previewEventArgs.Cancel)
@@ -139,6 +138,7 @@ public class DragTabItem : TabItem
 
     private void ThumbOnDragCompleted(object? sender, VectorEventArgs e)
     {
+       
         var args = new DragablzDragCompletedEventArgs(DragCompleted, this, e);
         RaiseEvent(args);
         MouseAtDragStart = new Point();
