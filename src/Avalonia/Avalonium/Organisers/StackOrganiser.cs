@@ -1,6 +1,11 @@
 ﻿using Avalonia;
+using Avalonia.Animation;
+using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Layout;
+using Avalonia.Media;
+using Avalonia.Styling;
+using Avalonia.Threading;
 
 namespace Avalonium.Organisers;
 
@@ -228,7 +233,7 @@ public abstract class StackOrganiser : IItemsOrganiser
         return currentLocations;
     }
     
-    private void SendToLocation(DragTabItem dragTabItem, double location)
+    private async void SendToLocation(DragTabItem dragTabItem, double location)
     {
         if (Math.Abs(_getLocation(dragTabItem) - location) < 1.0
             ||
@@ -239,27 +244,30 @@ public abstract class StackOrganiser : IItemsOrganiser
         }            
 
         _activeStoryboardTargetLocations[dragTabItem] = location;
-
         
+        var animation = new Animation
+        {
+            Easing = new CubicEaseOut(),
+            Duration = TimeSpan.FromMilliseconds(200),
+            PlaybackDirection = PlaybackDirection.Normal,
+            FillMode = FillMode.Forward,
+            Children =
+            {
+                new KeyFrame
+                {
+                    KeyTime = TimeSpan.FromMilliseconds(200),
+                    Setters =
+                    {
+                        new Setter(_canvasProperty, location),
+                    }
+                }
+            }
+        };
+
+        await animation.RunAsync(dragTabItem, null);
+
         _setLocation(dragTabItem, location);
-
-        //var storyboard = new Storyboard {FillBehavior = FillBehavior.Stop};
-        //storyboard.WhenComplete(sb =>
-        //{
-        //    _setLocation(DragTabItem, location);
-        //    sb.Remove(DragTabItem);
-        //    _activeStoryboardTargetLocations.Remove(DragTabItem);
-        //});
-
-        //var timeline = new DoubleAnimationUsingKeyFrames();
-        //timeline.SetValue(Storyboard.TargetPropertyProperty, new PropertyPath(_canvasDependencyProperty));
-        //timeline.KeyFrames.Add(
-        //    new EasingDoubleKeyFrame(location, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(200)))
-        //    {
-        //        EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut }
-        //    });
-        //storyboard.Children.Add(timeline);            
-        //storyboard.Begin(DragTabItem, true);            
+        _activeStoryboardTargetLocations.Remove(dragTabItem);
     }
 
     private LocationInfo GetLocationInfo(DragTabItem item)
