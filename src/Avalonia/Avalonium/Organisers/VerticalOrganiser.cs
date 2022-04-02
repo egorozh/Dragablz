@@ -2,7 +2,7 @@
 
 namespace Avalonium.Organisers;
 
-public class VerticalOrganiser : StackOrganiser
+public sealed class VerticalOrganiser : StackOrganiser
 {
     public VerticalOrganiser() : base(Orientation.Vertical)
     {

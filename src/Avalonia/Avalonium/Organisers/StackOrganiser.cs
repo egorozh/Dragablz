@@ -3,9 +3,7 @@ using Avalonia.Animation;
 using Avalonia.Animation.Easings;
 using Avalonia.Controls;
 using Avalonia.Layout;
-using Avalonia.Media;
 using Avalonia.Styling;
-using Avalonia.Threading;
 
 namespace Avalonium.Organisers;
 
@@ -39,25 +37,21 @@ public abstract class StackOrganiser : IItemsOrganiser
         {
             _getDesiredSize = item => item.DesiredSize.Width;
             _getLocation = item => item.X;
-            _setLocation = (item, coord) =>
-            {
-                item.SetValue(DragTabItem.XProperty, coord);
-            };
+            _setLocation = (item, coord) => { item.SetValue(DragTabItem.XProperty, coord); };
         }
         else
         {
             _getDesiredSize = item => item.DesiredSize.Height;
             _getLocation = item => item.Y;
-            _setLocation = (item, coord) =>
-            {
-                item.SetValue(DragTabItem.YProperty, coord);
-            };
+            _setLocation = (item, coord) => { item.SetValue(DragTabItem.YProperty, coord); };
         }
     }
 
     #endregion
-    
-    public virtual void Organise(Size measureBounds, IEnumerable<DragTabItem> items)
+
+    #region Public Methods
+
+    public void Organise(Size measureBounds, IEnumerable<DragTabItem> items)
     {
         if (items == null) throw new ArgumentNullException(nameof(items));
 
@@ -69,34 +63,17 @@ public abstract class StackOrganiser : IItemsOrganiser
                     .ThenAscending(tuple => tuple.Item1))
             .Select(tuple => tuple.Item2);
 
-        OrganiseInternal(measureBounds, sortedItems);            
+        OrganiseInternal(measureBounds, sortedItems);
     }
 
-    public virtual void Organise(Size measureBounds, IOrderedEnumerable<DragTabItem> items)
+    public void Organise(Size measureBounds, IOrderedEnumerable<DragTabItem> items)
     {
         if (items == null) throw new ArgumentNullException(nameof(items));
 
         OrganiseInternal(measureBounds, items);
     }
 
-    private void OrganiseInternal(Size measureBounds, IEnumerable<DragTabItem> items)
-    {
-        var currentCoord = 0.0;
-        var z = int.MaxValue;
-        var logicalIndex = 0;
-        foreach (var newItem in items)
-        {
-            newItem.ZIndex = newItem.IsSelected ? int.MaxValue : --z;
-            _setLocation(newItem, currentCoord);
-            newItem.LogicalIndex = logicalIndex++;
-            newItem.Measure(measureBounds);
-            var desiredSize = _getDesiredSize(newItem);
-            if (desiredSize == 0.0) desiredSize = 1.0; //no measure? create something to help sorting
-            currentCoord += desiredSize + _itemOffset;
-        }
-    }
-    
-    public virtual void OrganiseOnDragStarted(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
+    public void OrganiseOnDragStarted(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
     {
         if (siblingItems == null) throw new ArgumentNullException(nameof(siblingItems));
         if (dragItem == null) throw new ArgumentNullException(nameof(dragItem));
@@ -105,7 +82,7 @@ public abstract class StackOrganiser : IItemsOrganiser
         _siblingItemLocationOnDragStart = siblingItems.Select(GetLocationInfo).ToDictionary(loc => loc.Item);
     }
 
-    public virtual void OrganiseOnDrag(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
+    public void OrganiseOnDrag(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
     {
         if (siblingItems == null) throw new ArgumentNullException(nameof(siblingItems));
         if (dragItem == null) throw new ArgumentNullException(nameof(dragItem));
@@ -121,13 +98,14 @@ public abstract class StackOrganiser : IItemsOrganiser
                 SendToLocation(location.Item, currentCoord);
                 location.Item.ZIndex = --zIndex;
             }
-            currentCoord += _getDesiredSize(location.Item) + _itemOffset;                
+
+            currentCoord += _getDesiredSize(location.Item) + _itemOffset;
         }
 
         dragItem.ZIndex = int.MaxValue;
     }
 
-    public virtual void OrganiseOnDragCompleted(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
+    public void OrganiseOnDragCompleted(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
     {
         if (siblingItems == null) throw new ArgumentNullException(nameof(siblingItems));
 
@@ -146,8 +124,8 @@ public abstract class StackOrganiser : IItemsOrganiser
 
         dragItem.ZIndex = int.MaxValue;
     }
-    
-    public virtual Point ConstrainLocation(TabsItemsPresenter requestor, Rect measureBounds, Point itemDesiredLocation)
+
+    public Point ConstrainLocation(TabsItemsPresenter requestor, Rect measureBounds, Point itemDesiredLocation)
     {
         var fixedItems = requestor.FixedItemCount;
         var lowerBound = fixedItems == 0
@@ -156,17 +134,18 @@ public abstract class StackOrganiser : IItemsOrganiser
                 .Take(fixedItems)
                 .Last()).End + _itemOffset - 1;
 
-        return new Point(
-            _orientation == Orientation.Vertical
-                ? 0
-                : Math.Min(Math.Max(lowerBound, itemDesiredLocation.X), (measureBounds.Width) + 1),
-            _orientation == Orientation.Horizontal
-                ? 0
-                : Math.Min(Math.Max(lowerBound, itemDesiredLocation.Y), (measureBounds.Height) + 1)
-        );
+        var x = _orientation == Orientation.Vertical
+            ? 0
+            : Math.Min(Math.Max(lowerBound, itemDesiredLocation.X), (measureBounds.Width) + 1);
+
+        var y = _orientation == Orientation.Horizontal
+            ? 0
+            : Math.Min(Math.Max(lowerBound, itemDesiredLocation.Y), (measureBounds.Height) + 1);
+
+        return new Point(x, y);
     }
 
-    public virtual Size Measure(TabsItemsPresenter requestor, Rect availableSize, IEnumerable<DragTabItem> items)
+    public Size Measure(TabsItemsPresenter requestor, Rect availableSize, IEnumerable<DragTabItem> items)
     {
         if (items == null) throw new ArgumentNullException(nameof(items));
 
@@ -181,7 +160,7 @@ public abstract class StackOrganiser : IItemsOrganiser
 
             //var loaded = dragTabItem.IsLoaded
             var loaded = true;
-            
+
 
             if (_orientation == Orientation.Horizontal)
             {
@@ -206,11 +185,32 @@ public abstract class StackOrganiser : IItemsOrganiser
         return new Size(Math.Max(width, 0), Math.Max(height, 0));
     }
 
-    public virtual IEnumerable<DragTabItem> Sort(IEnumerable<DragTabItem> items)
+    public IEnumerable<DragTabItem> Sort(IEnumerable<DragTabItem> items)
     {
         if (items == null) throw new ArgumentNullException(nameof(items));
 
         return items.OrderBy(i => GetLocationInfo(i).Start);
+    }
+    
+    #endregion
+    
+    #region Private Methods
+
+    private void OrganiseInternal(Size measureBounds, IEnumerable<DragTabItem> items)
+    {
+        var currentCoord = 0.0;
+        var z = int.MaxValue;
+        var logicalIndex = 0;
+        foreach (var newItem in items)
+        {
+            newItem.ZIndex = newItem.IsSelected ? int.MaxValue : --z;
+            _setLocation(newItem, currentCoord);
+            newItem.LogicalIndex = logicalIndex++;
+            newItem.Measure(measureBounds);
+            var desiredSize = _getDesiredSize(newItem);
+            if (desiredSize == 0.0) desiredSize = 1.0; //no measure? create something to help sorting
+            currentCoord += desiredSize + _itemOffset;
+        }
     }
 
     private IEnumerable<LocationInfo> GetLocations(IEnumerable<DragTabItem> siblingItems, DragTabItem dragItem)
@@ -232,19 +232,19 @@ public abstract class StackOrganiser : IItemsOrganiser
 
         return currentLocations;
     }
-    
+
     private async void SendToLocation(DragTabItem dragTabItem, double location)
     {
         if (Math.Abs(_getLocation(dragTabItem) - location) < 1.0
             ||
             _activeStoryboardTargetLocations.TryGetValue(dragTabItem, out var activeTarget)
             && Math.Abs(activeTarget - location) < 1.0)
-        {             
+        {
             return;
-        }            
+        }
 
         _activeStoryboardTargetLocations[dragTabItem] = location;
-        
+
         var animation = new Animation
         {
             Easing = new CubicEaseOut(),
@@ -281,6 +281,9 @@ public abstract class StackOrganiser : IItemsOrganiser
         return new LocationInfo(item, startLocation, midLocation, endLocation);
     }
 
+
+    #endregion
+    
     #region Private Structs
 
     private readonly record struct LocationInfo(DragTabItem Item, double Start, double Mid, double End);

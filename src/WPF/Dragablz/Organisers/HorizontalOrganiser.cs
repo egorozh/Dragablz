@@ -2,7 +2,7 @@ using System.Windows.Controls;
 
 namespace Dragablz;
 
-public class HorizontalOrganiser : StackOrganiser
+public sealed class HorizontalOrganiser : StackOrganiser
 {
     public HorizontalOrganiser() : base(Orientation.Horizontal)
     { }
